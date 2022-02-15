@@ -1,0 +1,23 @@
+{
+    "browserWindow": {
+        "height": 800,
+        "width": 800,
+        "darkTheme": true,
+        "resizable": true,
+        "movable": true,
+        "closable": true,
+        "modal": false,
+        "webPreferences":{
+            "devTools": false,
+            "nodeIntegration": true,
+            "enableRemoteModule":true,
+            "webSecurity" : false
+        }
+       
+    },
+    "autoplayPolicy": "no-user-gesture-required",
+    "browserWindowInstance": {
+        
+    }
+
+}

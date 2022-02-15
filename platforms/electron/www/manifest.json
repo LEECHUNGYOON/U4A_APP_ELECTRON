@@ -1,0 +1,12 @@
+{
+  "background_color": "#FFF",
+  "display": "standalone",
+  "orientation": "any",
+  "start_url": "index.html",
+  "name": "template",
+  "short_name": "template",
+  "version": "com.template.app",
+  "description": "A U4A IDE Platform RnD Team application that responds to the deviceready event.",
+  "author": "U4A IDE Platform RnD Team",
+  "icons": []
+}

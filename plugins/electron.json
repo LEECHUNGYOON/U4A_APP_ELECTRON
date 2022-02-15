@@ -1,0 +1,24 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "com.template.app"
+    },
+    "cordova-plugin-network-information": {
+      "PACKAGE_NAME": "com.template.app"
+    },
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "com.template.app"
+    },
+    "cordova-plugin-inappbrowser": {
+      "PACKAGE_NAME": "com.template.app"
+    }
+  },
+  "dependent_plugins": {}
+}

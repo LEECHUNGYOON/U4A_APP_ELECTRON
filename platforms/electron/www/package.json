@@ -1,0 +1,18 @@
+{
+  "main": "cdv-electron-main.js",
+  "name": "com.template.app",
+  "displayName": "template",
+  "version": "1.0.0",
+  "description": "A U4A IDE Platform RnD Team application that responds to the deviceready event.",
+  "dependencies": {
+    "bwip-js": "^3.0.4",
+    "path": "^0.12.7",
+    "regedit": "^4.0.0"
+  },
+  "homepage": "https://www.u4ainfo.com",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "U4A IDE Platform RnD Team",
+    "email": "u4aide@u4ainfo.com"
+  }
+}
