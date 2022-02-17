@@ -82,18 +82,38 @@
         };
 
         //파일 폴더 디렉토리 선택 팝업 
-        var filePaths = REMOTE.dialog.showOpenDialog(REMOTE.getCurrentWindow(), options);
-        if (!filePaths) {
+        var oFilePathPromise = REMOTE.dialog.showOpenDialog(REMOTE.getCurrentWindow(), options);
+
+        oFilePathPromise.then(function(oPaths) {
+
+            var sFolderPath = oPaths.filePaths[0];
+
+            // 선택한 폴더 안에 파일 다운
+            oAPP.onFileDownInFolder(d, BLOB, sFolderPath);
+
+        }).catch(function(e) {
+
+            var sMsg = oAPP.onGetMsgTxt("0019"); /* 다운로드 폴더 디렉토리 선택 실패! */
+            alert(sMsg);
 
             // Busy 실행 끄기
             oAPP.setBusy('');
+
             return;
-        }
+
+        });
+
+    }; // end of o.onGetFileDownBlob
+
+    /************************************************************************
+     * 선택한 폴더 안에 파일 다운
+     * **********************************************************************/
+    o.onFileDownInFolder = function(d, BLOB, sFolderPath) {
 
         var fileName = d['fname'],
 
             //파일 Path 와 파일 명 조합 
-            folderPath = filePaths[0],
+            folderPath = sFolderPath,
             filePath = folderPath + "\\" + fileName; //폴더 경로 + 파일명
 
         var fileReader = new FileReader();
@@ -105,16 +125,18 @@
             //PC DOWNLOAD 
             FS.writeFile(filePath, buffer, {}, (err, res) => {
 
-                if (err) {                    
+                // Busy 실행 끄기
+                oAPP.setBusy('');
+
+                if (err) {
+
                     alert(oAPP.onGetMsgTxt("0014")); /* File Write Fail! */
-                    return
+
+                    return;
                 }
 
                 // 파일 다운받은 폴더를 오픈한다.
                 SHELL.showItemInFolder(filePath);
-
-                // Busy 실행 끄기
-                oAPP.setBusy('');
 
             });
 
@@ -122,7 +144,6 @@
 
         fileReader.readAsArrayBuffer(BLOB);
 
-    }; // end of o.onGetFileDownBlob
-
+    }; // end of o.onFileDownInFolder
 
 })(oAPP);
