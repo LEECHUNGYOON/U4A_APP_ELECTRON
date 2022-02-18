@@ -538,8 +538,6 @@ const oAPP = {
 
     getBrowserInfoPromise: function (aDefaultBrowsers, index) {
 
-        debugger;
-
         var oREGEDIT = REGEDIT,
             oDefBrows = aDefaultBrowsers[index],
             sRegPath = oDefBrows.REGPATH;
@@ -548,8 +546,6 @@ const oAPP = {
             sRegPath = oDefBrows.REGPATH;
 
         var oProm = new Promise((resolve, reject) => {
-
-            debugger;
 
             oREGEDIT.list(sRegPath, (err, result) => {
 
