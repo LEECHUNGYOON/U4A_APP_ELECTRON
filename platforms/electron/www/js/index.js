@@ -1,38 +1,14 @@
-// var REGEDIT = require('regedit');
-// // REGEDIT.setExternalVBSLocation('resources/regedit/vbs');
-
-var REMOTE = require('electron').remote,
-    IPCMAIN = REMOTE.require('electron').ipcMain,
-    IPCRENDERER = require('electron').ipcRenderer,
-    DIALOG = REMOTE.require('electron').dialog,
-    PATH = REMOTE.require('path'),
-    APP = REMOTE.app,
-    FS = REMOTE.require('fs'),    
-    REGEDIT = require('regedit'),
-    APPPATH = APP.getAppPath();
-
-REGEDIT.setExternalVBSLocation('resources/regedit/vbs');
-
-
 const oAPP = {
 
     _langu: "",
     _msgClass: {},
 
-    // _protcol: "&PARAM1&",
-    // _host: "&PARAM2&",
-    // _port: "&PARAM3&",
-    // _path: "&PARAM4&",
-    // _params: "&PARAM5&",
-
     _protcol: "http",
     _host: "49.236.106.96",
     _port: "8000",
-    // _path: "/zu4a/ylcy_cdv05",
     _path: "/zu4a/ycordova_test",
-    // _path: "/zu4a/ytest_api04",
     _params: "sap-client=800&sap-language=EN",
-
+    _isDev: true, // 운영 (고객) 배포용 일 경우 false로 반드시 변경!!
     _starturl: "",
     _Sessions: {
         "second": 0,
@@ -61,8 +37,13 @@ const oAPP = {
         },
     ],
 
+    /************************************************************************
+     * 초기 Start!!!
+     * **********************************************************************/
     onStart: function () {
 
+        debugger;
+        
         //nodejs API 초기 자원 할당
         oAPP.remote = require('electron').remote;
         oAPP.app = oAPP.remote.app;
@@ -72,11 +53,8 @@ const oAPP = {
         oAPP.BrowserWindow = oAPP.remote.require('electron').BrowserWindow;
         oAPP.path = oAPP.remote.require('path');
         oAPP.arguments = oAPP.remote.getGlobal('sharedObject');
-
-        // debugger;
-        // var aa = oAPP.path.join(oAPP.path.dirname(oAPP.remote.app.getPath('exe')), './resources/regedit/vbs');
-
-        // REGEDIT.setExternalVBSLocation();
+        oAPP.regedit = require('regedit');
+        oAPP.regedit.setExternalVBSLocation('resources/regedit/vbs');
 
         // 현재 PC에 설치된 브라우저 정보를 구한다.
         oAPP.onCheckInstalledBrowsers();
@@ -87,11 +65,12 @@ const oAPP = {
         //실행 APP pause / resume 설정 
         oAPP.onChkerSeesion();
 
+        // 브라우저 Menu Bar 활성 / 비활성 
+        oAPP.onChkMenuBarDisplay();
+
         //message Class
         this.onGetMsgClass("3");
         this.onGetMsgClass("E");
-
-        // Main start JS
 
         //U4A APP 에서 요청 수신 이벤트
         window.addEventListener('message', function (e) {
@@ -112,6 +91,112 @@ const oAPP = {
         });
 
     },
+
+    /************************************************************************
+     * 브라우저 Menu Bar 활성 / 비활성 
+     * **********************************************************************/
+    onChkMenuBarDisplay: function () {
+
+        var oCurrWin = oAPP.remote.getCurrentWindow();
+
+        // 배포용 일 경우 메뉴바를 없앤다.
+        if (oAPP._isDev == false) {
+            oCurrWin.setMenu(null);
+            return;
+        }
+
+        // 개발용이면 경우 브라우저 Menu Bar를 커스텀 한다.
+        oAPP.setCustomBrowserMenuBar();
+
+    }, // end of onChkMenuBarDisplay
+
+    /************************************************************************
+     * 개발용이면 경우 브라우저 Menu Bar를 커스텀 한다.
+     * **********************************************************************/
+    setCustomBrowserMenuBar: function () {
+
+        // MenuBar List
+        var aMenus = [{
+            key: "MENU01",
+            label: "File",
+            submenu: [{
+                key: "MENU01_01",
+                label: "Exit",
+                click: oAPP.onMENU01_01
+            }]
+        }, {
+            key: "MENU02",
+            label: "View",
+            submenu: [{
+                    key: "MENU02_01",
+                    label: "Reload",
+                    accelerator: "Ctrl+R",
+                    click: oAPP.onMENU02_01
+                },
+                {
+                    key: "MENU02_02",
+                    label: "Toggle Developer Tool",
+                    accelerator: "Ctrl+Shift+I",
+                    click: oAPP.onMENU02_02
+                }, {
+                    key: "MENU02_03",
+                    label: "Toggle Full Screen",
+                    accelerator: "F11",
+                    click: oAPP.onMENU02_03
+                }
+            ]
+        }];
+
+        // 현재 브라우저에 메뉴를 적용한다.
+        var MENU = oAPP.remote.Menu,
+            oCurrWin = oAPP.remote.getCurrentWindow(),
+            oMenu = MENU.buildFromTemplate(aMenus);
+
+        oCurrWin.setMenu(oMenu);
+
+    }, // end of setCustomBrowserMenuBar
+
+    /************************************************************************
+     * [Menu Bar Event] Exit
+     * **********************************************************************/
+    onMENU01_01: function (e) {
+
+        var oCurrWin = oAPP.remote.getCurrentWindow();
+        oCurrWin.close();
+
+    }, // end of onMENU01_01
+
+    /************************************************************************
+     * [Menu Bar Event] Reload
+     * **********************************************************************/
+    onMENU02_01: function () {
+
+        var oCurrWin = oAPP.remote.getCurrentWindow();
+        oCurrWin.webContents.reload();
+
+    }, // end of onMENU02_01
+
+    /************************************************************************
+     * [Menu Bar Event] Toggle Developer Tool
+     * **********************************************************************/
+    onMENU02_02: function () {
+
+        var oCurrWin = oAPP.remote.getCurrentWindow();
+        oCurrWin.webContents.openDevTools();
+
+    }, // end of onMENU02_02
+
+    /************************************************************************
+     * [Menu Bar Event] Toggle Full Screen
+     * **********************************************************************/
+    onMENU02_03: function () {
+
+        var oCurrWin = oAPP.remote.getCurrentWindow(),
+            bIsFull = oCurrWin.isFullScreen();
+
+            oCurrWin.setFullScreen(!bIsFull);
+
+    }, // end of onMENU02_03
 
     onChkerSeesion: function () {
 
@@ -545,9 +630,7 @@ const oAPP = {
 
     getBrowserInfoPromise: function (aDefaultBrowsers, index) {
 
-        debugger;
-
-        var oREGEDIT = REGEDIT,
+        var oREGEDIT = oAPP.regedit,
             oDefBrows = aDefaultBrowsers[index],
             sRegPath = oDefBrows.REGPATH;
 
@@ -555,8 +638,6 @@ const oAPP = {
             sRegPath = oDefBrows.REGPATH;
 
         var oProm = new Promise((resolve, reject) => {
-
-            debugger;
 
             oREGEDIT.list(sRegPath, (err, result) => {
 
@@ -646,19 +727,16 @@ function onNetWorkOnline() {
     };
 
     // 초기 로드 했는지 여부 체크
-
     var isInitLoad = oFrame.getAttribute("data-init-load");
-
     if (isInitLoad == 'X') {
         return;
     }
 
-    // 로드할 URL
-    var sLoadUrl = oAPP._starturl;
-
     oFrame.setAttribute("data-init-load", "X");
 
-    var oForm = document.getElementById('u4asendform');
+    // 로드할 URL
+    var sLoadUrl = oAPP._starturl,
+        oForm = document.getElementById('u4asendform');
 
     // 파라미터 전송 필요 시 FORM 안에 hidden field 생성
     oForm.action = sLoadUrl;

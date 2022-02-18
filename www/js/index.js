@@ -1,19 +1,3 @@
-// var REGEDIT = require('regedit');
-// // REGEDIT.setExternalVBSLocation('resources/regedit/vbs');
-
-var REMOTE = require('electron').remote,
-    IPCMAIN = REMOTE.require('electron').ipcMain,
-    IPCRENDERER = require('electron').ipcRenderer,
-    DIALOG = REMOTE.require('electron').dialog,
-    PATH = REMOTE.require('path'),
-    APP = REMOTE.app,
-    FS = REMOTE.require('fs'),
-    REGEDIT = require('regedit'),
-    APPPATH = APP.getAppPath();
-
-REGEDIT.setExternalVBSLocation('resources/regedit/vbs');
-
-
 const oAPP = {
 
     _langu: "",
@@ -58,6 +42,8 @@ const oAPP = {
      * **********************************************************************/
     onStart: function () {
 
+        debugger;
+        
         //nodejs API 초기 자원 할당
         oAPP.remote = require('electron').remote;
         oAPP.app = oAPP.remote.app;
@@ -67,6 +53,8 @@ const oAPP = {
         oAPP.BrowserWindow = oAPP.remote.require('electron').BrowserWindow;
         oAPP.path = oAPP.remote.require('path');
         oAPP.arguments = oAPP.remote.getGlobal('sharedObject');
+        oAPP.regedit = require('regedit');
+        oAPP.regedit.setExternalVBSLocation('resources/regedit/vbs');
 
         // 현재 PC에 설치된 브라우저 정보를 구한다.
         oAPP.onCheckInstalledBrowsers();
@@ -642,7 +630,7 @@ const oAPP = {
 
     getBrowserInfoPromise: function (aDefaultBrowsers, index) {
 
-        var oREGEDIT = REGEDIT,
+        var oREGEDIT = oAPP.regedit,
             oDefBrows = aDefaultBrowsers[index],
             sRegPath = oDefBrows.REGPATH;
 
@@ -739,19 +727,16 @@ function onNetWorkOnline() {
     };
 
     // 초기 로드 했는지 여부 체크
-
     var isInitLoad = oFrame.getAttribute("data-init-load");
-
     if (isInitLoad == 'X') {
         return;
     }
 
-    // 로드할 URL
-    var sLoadUrl = oAPP._starturl;
-
     oFrame.setAttribute("data-init-load", "X");
 
-    var oForm = document.getElementById('u4asendform');
+    // 로드할 URL
+    var sLoadUrl = oAPP._starturl,
+        oForm = document.getElementById('u4asendform');
 
     // 파라미터 전송 필요 시 FORM 안에 hidden field 생성
     oForm.action = sLoadUrl;

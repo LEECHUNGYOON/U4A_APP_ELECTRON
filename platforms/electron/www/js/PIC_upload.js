@@ -119,7 +119,7 @@
             var oBlob = new Blob([oArrayBuffer], {
                     type: "image/jpeg"
                 }),
-                sFileName = "electron_image" + iImageFileNameCount + ".jpeg",
+                sFileName = "capture" + iImageFileNameCount + ".jpeg",
                 retVal = {
                     "content": oBlob,
                     "name": sFileName
