@@ -1,8 +1,0 @@
-version: 1.0.0
-files:
-  - url: com.template.app-setup-1.0.0.exe
-    sha512: EqcJ1APL+w4gF4b8a8abSfwuJHYdPYTnVzpz9ZL+wMUyODMgIl0VLnXubVUzWohh/4IzOO3RY5D7vLsnlGlC7Q==
-    size: 45294618
-path: com.template.app-setup-1.0.0.exe
-sha512: EqcJ1APL+w4gF4b8a8abSfwuJHYdPYTnVzpz9ZL+wMUyODMgIl0VLnXubVUzWohh/4IzOO3RY5D7vLsnlGlC7Q==
-releaseDate: '2022-02-19T12:10:23.437Z'
