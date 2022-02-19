@@ -1,0 +1,20 @@
+directories:
+  output: 'D:\chungyoon\Github\U4A_APP_ELECTRON\platforms\electron\build'
+  buildResources: 'D:\chungyoon\Github\U4A_APP_ELECTRON\platforms\electron\build-res'
+  app: 'D:\chungyoon\Github\U4A_APP_ELECTRON\platforms\electron\www'
+extraResources:
+  - from: node_modules/regedit/vbs
+    to: regedit/vbs
+    filter:
+      - '**/*'
+appId: com.template.app
+productName: template
+electronVersion: 4.0.1
+electronDownload:
+  version: 4.0.1
+win:
+  icon: installer.png
+  target:
+    - target: nsis
+      arch:
+        - x64
