@@ -19,6 +19,7 @@
     <platform name="electron">
         <preference name="AppendUserAgent" value="u4a_cordova_electron" />
         <preference name="ElectronSettingsFilePath" value="www/settings/u4a-electron-settings.json" />
+        <icon src="www/img/logo.png" target="installer" />
     </platform>
     <platform name="android">
         <allow-intent href="market:*" />
