@@ -65,7 +65,14 @@ let oAPP = (function() {
 
             oFilePathPromise.then(function(oPaths) {
 
-                var sShortcutName = oData.APPID + ".lnk",
+                if (typeof oPaths[0] == "undefined") {
+                
+                    // Busy 실행 끄기
+                    oAPP.setBusy('');
+                    return;
+                }
+
+                var sShortcutName = oAppInfo.APPID + ".lnk",
                     sShortcutUrl = oAPP.path.join(process.env.APPDATA, 'Microsoft', 'Windows', 'Start Menu', 'Programs', sShortcutName),
                     sTargetUrl = process.execPath;
 
@@ -85,8 +92,8 @@ let oAPP = (function() {
 
             }).catch(function(e) {
 
-                var sMsg = oAPP.onGetMsgTxt("0019"); /* 다운로드 폴더 디렉토리 선택 실패! */
-                alert(sMsg);
+                // var sMsg = oAPP.onGetMsgTxt("0019"); /* 다운로드 폴더 디렉토리 선택 실패! */
+                // alert(sMsg);
 
                 // Busy 실행 끄기
                 oAPP.setBusy('');

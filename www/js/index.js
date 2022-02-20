@@ -99,10 +99,6 @@ let oAPP = (function() {
          * **********************************************************************/
         onCheckShortCut: function() {
 
-            var sParam = oAPP.remote.process.argv[1];
-
-            alert(sParam);
-
             /**
              * 파라미터 체크
              * 1. string 여부
@@ -113,6 +109,8 @@ let oAPP = (function() {
              * 나머지 로직 수행..
              */
 
+            var sParam = oAPP.remote.process.argv[1];
+
             // 파라미터가 String 형태인지 확인
             if (typeof sParam !== "string") {
                 return false;
@@ -120,14 +118,20 @@ let oAPP = (function() {
 
             // 파라미터가 JSON 형태인지 확인
             try {
-                var oParamJson = JSON.parse(sParam),
+
+                var sParamDec = decodeURIComponent(sParam);
+                var oParamJson = JSON.parse(sParamDec),
                     oParam = oParamJson.DATA;
 
                 if (typeof oParam == "undefined") {
                     return false;
                 }
 
-
+                this._protcol = oParam.PROTO;
+                this._host = oParam.HOST;
+                this._port = oParam.PORT;
+                this._path = oParam.PATH;
+                this._params = oParam.PARAM;
 
                 return true;
 
@@ -745,7 +749,7 @@ let oAPP = (function() {
             oAPP.onAppLoadUrl();
 
             // 장막을 해제 한다.
-            showNetworkDisconnBlock('');
+            oAPP.showNetworkDisconnBlock('');
 
             var oFrame = document.getElementById("u4aAppiFrame");
             oFrame.onload = function() {
@@ -774,7 +778,7 @@ let oAPP = (function() {
         onNetWorkOffline: function() {
 
             // 장막을 펼친다.
-            showNetworkDisconnBlock('X');
+            oAPP.showNetworkDisconnBlock('X');
 
         }, // end of onNetWorkOffline
 
@@ -816,7 +820,11 @@ oAPP.BrowserWindow = oAPP.remote.require('electron').BrowserWindow;
 oAPP.path = oAPP.remote.require('path');
 oAPP.arguments = oAPP.remote.getGlobal('sharedObject');
 oAPP.regedit = require('regedit');
-oAPP.regedit.setExternalVBSLocation('resources/regedit/vbs');
+
+const vbsDirectory = oAPP.path.join(oAPP.path.dirname(oAPP.app.getPath('exe')), 'resources/regedit/vbs');
+oAPP.regedit.setExternalVBSLocation(vbsDirectory);
+
+// oAPP.regedit.setExternalVBSLocation('resources/regedit/vbs');
 
 // Device ready
 document.addEventListener('deviceready', oAPP.onDeviceReady, false);
