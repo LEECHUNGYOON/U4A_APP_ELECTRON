@@ -5,8 +5,6 @@ let oAPP = (function() {
         shell
     } = require('electron');
 
-    var sUrl = "/create";
-
     return {
 
         onCreateShortcut: function() {
@@ -21,19 +19,15 @@ let oAPP = (function() {
 
             var oAppid = document.getElementById("appid"),
                 oAppdesc = document.getElementById("appdesc"),
-                oShortcut = document.getElementById("shortcut"),
-                // oIntro = document.getElementById("intro"),
                 oProto = document.getElementById("proto"),
                 oHost = document.getElementById("host"),
                 oPort = document.getElementById("port"),
                 oPath = document.getElementById("path"),
                 oParam = document.getElementById("parameters");
 
-            var oData = {
+            var oAppInfo = {
                 APPID: oAppid.value,
                 APPDESC: oAppdesc.value,
-                SHORTCUT: oShortcut.files[0],
-                // INTRO: oIntro.files[0],
                 PROTO: oProto.value,
                 HOST: oHost.value,
                 PORT: oPort.value,
@@ -41,18 +35,8 @@ let oAPP = (function() {
                 PARAM: oParam.value
             };
 
-            // var oForm = new FormData();
-            // oForm.append("APPID", oTargetData.APPID);
-            // oForm.append("APPDESC", oTargetData.APPDESC);
-            // oForm.append("PROTO", oTargetData.PROTO);
-            // oForm.append("HOST", oTargetData.HOST);
-            // oForm.append("PORT", oTargetData.PORT);
-            // oForm.append("PATH", oTargetData.PATH);
-            // oForm.append("PARAM", oTargetData.PARAM);
-            // oForm.append("SHORTCUT", oTargetData.SHORTCUT || "");
-
             // 입력값 체크..
-            var oRet = oAPP.onCheckAppInfo(oData);
+            var oRet = oAPP.onCheckAppInfo(oAppInfo);
             if (oRet.CODE == "E") {
 
                 alert(oRet.MSG);
@@ -62,71 +46,76 @@ let oAPP = (function() {
                 return;
             }
 
-            var sShortcutName = oData.APPID + ".lnk";
-
-            //생성 위치 패스 구성  SHHONG.lnk <-- 맨마지막 파라메터 명이 생성 숏컷 이름이 됨!!
-            let shortcut = oAPP.path.join(process.env.APPDATA, 'Microsoft', 'Windows', 'Start Menu', 'Programs', sShortcutName);
-
-            debugger;
-
-            //인스톨 설치된(EXE) 경로 
-            let TargetURL = process.execPath;
-
-            let ImgPath = "";
-
-            let oSendParam = {
-                DATA: oData
+            var oShortCutAppInfo = {
+                DATA: oAppInfo
             };
 
-            //전송 파라메터 설정
-            let T_param = JSON.stringify(oSendParam);
-
-            //바로가기 내역
-            var Ldesc = oData.APPID;
-
-            debugger;
-
-
-            //아이콘 -> pc 디렉토리에 파일을 선택
-            let options = {
-
-                // See place holder 1 in above image
-                title: "Custom title bar",
-
-                // See place holder 2 in above image
-                //defaultPath : "D:\\electron-app",
-
-                // See place holder 3 in above image
-                buttonLabel: "Custom button",
-
-                // See place holder 4 in above image
+            // 다운받을 폴더 지정하는 팝업에 대한 Option
+            var options = {
+                title: "ShortCut Icon Select",
                 filters: [{
                     name: 'Images',
                     extensions: ['ico', 'png']
                 }],
-
                 properties: ['openFile', '']
-
             };
 
+            //파일 폴더 디렉토리 선택 팝업 
+            var oFilePathPromise = oAPP.remote.dialog.showOpenDialog(oAPP.remote.getCurrentWindow(), options);
 
-            let filePaths = oAPP.remote.dialog.showOpenDialog(oAPP.remote.getCurrentWindow(), options);
+            oFilePathPromise.then(function(oPaths) {
 
-            ImgPath = filePaths[0];
+                var sShortcutName = oData.APPID + ".lnk",
+                    sShortcutUrl = oAPP.path.join(process.env.APPDATA, 'Microsoft', 'Windows', 'Start Menu', 'Programs', sShortcutName),
+                    sTargetUrl = process.execPath;
+
+                var oShortcutInfo = {
+                    shortcutUrl: sShortcutUrl, // shortcut 바로가기 경로
+                    target: sTargetUrl, //인스톨 설치된(EXE) 경로 
+                    args: JSON.stringify(oShortCutAppInfo), // shortcut 만들려는 app 정보
+                    description: oAppInfo.APPDESC, // 바로가기 이름
+                    appUserModelId: sTargetUrl,
+                    icon: oPaths.filePaths[0], // 아이콘 이미지 경로
+                    iconIndex: 0
+                };
+
+                // Shortcut Download
+                oAPP.onShortCutDownload(oShortcutInfo);
+
+
+            }).catch(function(e) {
+
+                var sMsg = oAPP.onGetMsgTxt("0019"); /* 다운로드 폴더 디렉토리 선택 실패! */
+                alert(sMsg);
+
+                // Busy 실행 끄기
+                oAPP.setBusy('');
+
+                return;
+
+            });
+
+        },
+
+        onShortCutDownload: function(oShortcutInfo) {
 
             //실행~
-            let res = shell.writeShortcutLink(shortcut, {
-                target: TargetURL,
-                args: T_param,
-                description: Ldesc,
-                appUserModelId: TargetURL,
-                icon: ImgPath,
-                iconIndex: 0
+            var res = shell.writeShortcutLink(oShortcutInfo.shortcutUrl, {
+                target: oShortcutInfo.target,
+                args: oShortcutInfo.args,
+                description: oShortcutInfo.description,
+                appUserModelId: oShortcutInfo.appUserModelId,
+                icon: oShortcutInfo.icon,
+                iconIndex: oShortcutInfo.iconIndex
             });
 
             //리턴 
             if (res) {
+
                 alert('Shortcut created successfully', 'success');
+
+                // 파일 다운받은 폴더를 오픈한다.
+                shell.showItemInFolder(oShortcutInfo.shortcutUrl);
 
             } else {
                 alert('Failed to create the shortcut', 'danger');
@@ -135,19 +124,7 @@ let oAPP = (function() {
 
             oAPP.setBusy('');
 
-            // var oForm = new FormData();
 
-            // oForm.append("APPID", oTargetData.APPID);
-            // oForm.append("APPDESC", oTargetData.APPDESC);
-            // oForm.append("PROTO", oTargetData.PROTO);
-            // oForm.append("HOST", oTargetData.HOST);
-            // oForm.append("PORT", oTargetData.PORT);
-            // oForm.append("PATH", oTargetData.PATH);
-            // oForm.append("PARAM", oTargetData.PARAM);
-            // oForm.append("SHORTCUT", oTargetData.SHORTCUT || "");
-            // oForm.append("INTRO", oTargetData.INTRO || "");
-
-            // oAPP.sendAjax(sCreatePath, oForm);
 
         },
 
