@@ -30,15 +30,15 @@
     </div>
 
     <script>
-        (function () {
+        var oAPP = (function () {
             "use strict";
 
             /************************************************************************
              * Global Variables
              * **********************************************************************/
-            
+
             var oAPP = {};
-            
+
             oAPP.CameraPicImgSrc;
 
             const
@@ -87,6 +87,8 @@
             // image Capture 한 base64를 전달받는다.
             IPCRENDERER.on("if-camera-pic-img", oAPP.onIpcRenderer_if_camera_pic_img);
 
+            return oAPP;
+            
         })();
     </script>
 </body>

@@ -50,14 +50,14 @@
     <script src="cordova.js"></script>
     <!-- <script src="js/common.js"></script> -->
     <script>
-        (function () {
+        var oAPP = (function () {
             "use strict";
 
             /************************************************************************
              * Global Variables
              * **********************************************************************/
             var oAPP = {};
-            
+
             const
                 PATH = require('path'),
                 COMMON = require(PATH.join(__dirname, "\\js\\common.js"));
@@ -409,6 +409,9 @@
                 IPCRENDERER.removeListener("if-camera-pic-opt", oAPP.onIpcRenderer_if_camera_pic_opt);
 
             };
+
+            return oAPP;
+            
         })();
 
         window.addEventListener("beforeunload", oAPP.onBeforeunload);
