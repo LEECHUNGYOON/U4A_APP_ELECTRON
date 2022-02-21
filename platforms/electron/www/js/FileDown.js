@@ -88,6 +88,13 @@
 
             var sFolderPath = oPaths.filePaths[0];
 
+            if (typeof sFolderPath == "undefined") {
+                
+                // Busy 실행 끄기
+                oAPP.setBusy('');
+                return;
+            }            
+
             // 선택한 폴더 안에 파일 다운
             oAPP.onFileDownInFolder(d, BLOB, sFolderPath);
 

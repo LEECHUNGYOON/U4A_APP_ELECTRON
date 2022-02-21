@@ -1,39 +1,50 @@
-let oAPP = (function() {
+let oAPP = (function () {
     "use strict";
 
-    const {
-        shell
-    } = require('electron');
-
-    var sUrl = "/create";
+    const
+        PATH = require('path'),
+        COMMON = require(PATH.join(__dirname, "\\js\\common.js")),
+        SETTINGS = require(PATH.join(__dirname, "\\settings\\u4a-electron-settings.json"));
 
     return {
 
-        onCreateShortcut: function() {
+        onStart : function(){
 
-            debugger;
+            var oCurrWin = oAPP.remote.getCurrentWindow();
+
+            // 배포용 일 경우 메뉴바를 없앤다.
+            if (SETTINGS.isDev == false) {
+                oCurrWin.setMenu(null);
+                return;
+            }
+
+            var aMenus = COMMON.getMenuBarList();
+
+            // 현재 브라우저에 메뉴를 적용한다.
+            var MENU = oAPP.remote.Menu,                
+                oMenu = MENU.buildFromTemplate(aMenus);
+
+            oCurrWin.setMenu(oMenu);
+
+        },
+
+        onCreateShortcut: function () {
 
             event.preventDefault();
 
             oAPP.setBusy('X');
 
-            console.log("build button click!!");
-
             var oAppid = document.getElementById("appid"),
                 oAppdesc = document.getElementById("appdesc"),
-                oShortcut = document.getElementById("shortcut"),
-                // oIntro = document.getElementById("intro"),
                 oProto = document.getElementById("proto"),
                 oHost = document.getElementById("host"),
                 oPort = document.getElementById("port"),
                 oPath = document.getElementById("path"),
                 oParam = document.getElementById("parameters");
 
-            var oData = {
+            var oAppInfo = {
                 APPID: oAppid.value,
                 APPDESC: oAppdesc.value,
-                SHORTCUT: oShortcut.files[0],
-                // INTRO: oIntro.files[0],
                 PROTO: oProto.value,
                 HOST: oHost.value,
                 PORT: oPort.value,
@@ -41,18 +52,8 @@ let oAPP = (function() {
                 PARAM: oParam.value
             };
 
-            // var oForm = new FormData();
-            // oForm.append("APPID", oTargetData.APPID);
-            // oForm.append("APPDESC", oTargetData.APPDESC);
-            // oForm.append("PROTO", oTargetData.PROTO);
-            // oForm.append("HOST", oTargetData.HOST);
-            // oForm.append("PORT", oTargetData.PORT);
-            // oForm.append("PATH", oTargetData.PATH);
-            // oForm.append("PARAM", oTargetData.PARAM);
-            // oForm.append("SHORTCUT", oTargetData.SHORTCUT || "");
-
             // 입력값 체크..
-            var oRet = oAPP.onCheckAppInfo(oData);
+            var oRet = oAPP.onCheckAppInfo(oAppInfo);
             if (oRet.CODE == "E") {
 
                 alert(oRet.MSG);
@@ -62,71 +63,89 @@ let oAPP = (function() {
                 return;
             }
 
-            var sShortcutName = oData.APPID + ".lnk";
-
-            //생성 위치 패스 구성  SHHONG.lnk <-- 맨마지막 파라메터 명이 생성 숏컷 이름이 됨!!
-            let shortcut = oAPP.path.join(process.env.APPDATA, 'Microsoft', 'Windows', 'Start Menu', 'Programs', sShortcutName);
-
-            debugger;
-
-            //인스톨 설치된(EXE) 경로 
-            let TargetURL = process.execPath;
-
-            let ImgPath = "";
-
-            let oSendParam = {
-                DATA: oData
+            var oShortCutAppInfo = {
+                DATA: oAppInfo
             };
 
-            //전송 파라메터 설정
-            let T_param = JSON.stringify(oSendParam);
-
-            //바로가기 내역
-            var Ldesc = oData.APPID;
-
-            debugger;
-
-
-            //아이콘 -> pc 디렉토리에 파일을 선택
-            let options = {
-
-                // See place holder 1 in above image
-                title: "Custom title bar",
-
-                // See place holder 2 in above image
-                //defaultPath : "D:\\electron-app",
-
-                // See place holder 3 in above image
-                buttonLabel: "Custom button",
-
-                // See place holder 4 in above image
+            // 다운받을 폴더 지정하는 팝업에 대한 Option
+            var options = {
+                title: "ShortCut Icon Select",
                 filters: [{
                     name: 'Images',
                     extensions: ['ico', 'png']
                 }],
-
                 properties: ['openFile', '']
-
             };
 
+            //파일 폴더 디렉토리 선택 팝업 
+            var oFilePathPromise = oAPP.remote.dialog.showOpenDialog(oAPP.remote.getCurrentWindow(), options);
 
-            let filePaths = oAPP.remote.dialog.showOpenDialog(oAPP.remote.getCurrentWindow(), options);
+            oFilePathPromise.then(function (oPaths) {
 
-            ImgPath = filePaths[0];
+                var sIconPath = oPaths.filePaths[0];
+
+                if (typeof sIconPath == "undefined") {
+
+                    // Busy 실행 끄기
+                    oAPP.setBusy('');
+                    return;
+                }
+
+                var sShortcutName = oAppInfo.APPID + ".lnk",
+                    sShortcutUrl = oAPP.path.join(process.env.APPDATA, 'Microsoft', 'Windows', 'Start Menu', 'Programs', sShortcutName),
+                    sTargetUrl = process.execPath;
+
+                var arguEnc = encodeURIComponent(JSON.stringify(oShortCutAppInfo));
+
+                var oShortcutInfo = {
+                    shortcutUrl: sShortcutUrl, // shortcut 바로가기 경로
+                    target: sTargetUrl, //인스톨 설치된(EXE) 경로 
+                    args: arguEnc, // shortcut 만들려는 app 정보
+                    description: oAppInfo.APPDESC, // 바로가기 이름
+                    appUserModelId: sTargetUrl,
+                    icon: sIconPath, // 아이콘 이미지 경로
+                    iconIndex: 0
+                };
+
+                // Shortcut Download
+                oAPP.onShortCutDownload(oShortcutInfo);
+
+
+            }).catch(function (e) {
+
+                alert(e.toString());
+
+                // var sMsg = oAPP.onGetMsgTxt("0019"); /* 다운로드 폴더 디렉토리 선택 실패! */
+                // alert(sMsg);
+
+                // Busy 실행 끄기
+                oAPP.setBusy('');
+
+                return;
+
+            });
+
+        },
+
+        onShortCutDownload: function (oShortcutInfo) {
 
             //실행~
-            let res = shell.writeShortcutLink(shortcut, {
-                target: TargetURL,
-                args: T_param,
-                description: Ldesc,
-                appUserModelId: TargetURL,
-                icon: ImgPath,
-                iconIndex: 0
+            var res = oAPP.shell.writeShortcutLink(oShortcutInfo.shortcutUrl, {
+                target: oShortcutInfo.target,
+                args: oShortcutInfo.args,
+                description: oShortcutInfo.description,
+                appUserModelId: oShortcutInfo.appUserModelId,
+                icon: oShortcutInfo.icon,
+                iconIndex: oShortcutInfo.iconIndex
             });
 
             //리턴 
             if (res) {
+
                 alert('Shortcut created successfully', 'success');
+
+                // 파일 다운받은 폴더를 오픈한다.
+                oAPP.shell.showItemInFolder(oShortcutInfo.shortcutUrl);
 
             } else {
                 alert('Failed to create the shortcut', 'danger');
@@ -135,24 +154,10 @@ let oAPP = (function() {
 
             oAPP.setBusy('');
 
-            // var oForm = new FormData();
-
-            // oForm.append("APPID", oTargetData.APPID);
-            // oForm.append("APPDESC", oTargetData.APPDESC);
-            // oForm.append("PROTO", oTargetData.PROTO);
-            // oForm.append("HOST", oTargetData.HOST);
-            // oForm.append("PORT", oTargetData.PORT);
-            // oForm.append("PATH", oTargetData.PATH);
-            // oForm.append("PARAM", oTargetData.PARAM);
-            // oForm.append("SHORTCUT", oTargetData.SHORTCUT || "");
-            // oForm.append("INTRO", oTargetData.INTRO || "");
-
-            // oAPP.sendAjax(sCreatePath, oForm);
-
         },
 
         // 앱 정보 입력 체크
-        onCheckAppInfo: function(oTargetData) {
+        onCheckAppInfo: function (oTargetData) {
 
             /***********************************************************************************
              *  APP ID 체크
@@ -193,7 +198,7 @@ let oAPP = (function() {
         }, // end of oAPP.onCheckAppInfo      
 
         // APPID 입력 체크
-        checkValidAppId: function(sAppId) {
+        checkValidAppId: function (sAppId) {
 
             var oRetMsg = {
                 CODE: "E",
@@ -206,12 +211,6 @@ let oAPP = (function() {
                 oRetMsg.MSG = "APPID를 입력하세요";
                 return oRetMsg;
             }
-
-            // // 입력길이 확인
-            // if (sAppId.length > 20) {
-            //     oRetMsg.MSG = "APPID는 20자 이하만 입력 가능합니다";
-            //     return oRetMsg;
-            // }
 
             // 특수문자 입력 체크
             var bIsValid = oAPP.checkSpecial(sAppId);
@@ -241,7 +240,7 @@ let oAPP = (function() {
         }, // end of oAPP.checkValidAppId
 
         // App Description 입력 체크
-        checkValidAppDesc: function(sAppDesc) {
+        checkValidAppDesc: function (sAppDesc) {
 
             var oRetMsg = {
                 CODE: "E",
@@ -262,7 +261,7 @@ let oAPP = (function() {
         }, // end of oAPP.checkValidAppDesc
 
         // Protocol 입력 체크
-        checkValidProtocol: function(sProto) {
+        checkValidProtocol: function (sProto) {
 
             var oRetMsg = {
                 CODE: "E",
@@ -283,7 +282,7 @@ let oAPP = (function() {
         }, // end of oAPP.checkValidProtocol
 
         // Host 입력 체크
-        checkValidHost: function(sHost) {
+        checkValidHost: function (sHost) {
 
             var oRetMsg = {
                 CODE: "E",
@@ -304,7 +303,7 @@ let oAPP = (function() {
         }, // end of oAPP.checkValidHost
 
         // Path 입력 체크
-        checkValidPath: function(sPath) {
+        checkValidPath: function (sPath) {
 
             var oRetMsg = {
                 CODE: "E",
@@ -325,7 +324,7 @@ let oAPP = (function() {
         }, // end of oAPP.checkValidPath
 
         // 영문 + 숫자 입력 체크
-        checkEngNum: function(str) {
+        checkEngNum: function (str) {
             var regExp = /^[A-Za-z]|^[A-Za-z]+[A-Za-z0-9]+/g;
 
             if (regExp.test(str)) {
@@ -337,7 +336,7 @@ let oAPP = (function() {
         },
 
         // 특수문자 체크
-        checkSpecial: function(str) {
+        checkSpecial: function (str) {
             var special_pattern = /[`~!@#$%^&*|\\\'\";:\/?]/gi;
             if (special_pattern.test(str) == true) {
                 console.log("특수문자 걸림!!");
@@ -348,7 +347,7 @@ let oAPP = (function() {
         },
 
         // 공백(스페이스 바) 체크 
-        checkSpace: function(str) {
+        checkSpace: function (str) {
             if (str.search(/\s/) !== -1) {
                 console.log("공백 있음!!");
                 return true;
@@ -358,7 +357,7 @@ let oAPP = (function() {
         },
 
         // 첨부파일 이미지 사이즈 용량 제한
-        checkFilesSize: function(input) {
+        checkFilesSize: function (input) {
 
             if (input.files && input.files[0].size > (1 * 1024 * 1024)) {
                 alert("파일 사이즈가 1mb 를 넘습니다.");
@@ -367,7 +366,7 @@ let oAPP = (function() {
 
         }, // end of oAPP.checkFilesSize
 
-        setBusy: function(bIsBusy) {
+        setBusy: function (bIsBusy) {
 
             var oBusy = document.getElementById("u4aWsBusyIndicator");
 
@@ -394,27 +393,28 @@ oAPP.ipcMain = oAPP.remote.require('electron').ipcMain;
 oAPP.fs = oAPP.remote.require('fs');
 oAPP.BrowserWindow = oAPP.remote.require('electron').BrowserWindow;
 oAPP.path = oAPP.remote.require('path');
+oAPP.shell = require('electron').shell;
+
+window.onload = function () {
 
 
-window.onload = function() {
-
-    var oAppid = document.getElementById("appid"),
-        oAppdesc = document.getElementById("appdesc"),
-        oShortcut = document.getElementById("shortcut"),
-        // oIntro = document.getElementById("intro"),
+    var oAppdesc = document.getElementById("appdesc"),
         oProto = document.getElementById("proto"),
         oHost = document.getElementById("host"),
         oPort = document.getElementById("port"),
         oPath = document.getElementById("path"),
         oParam = document.getElementById("parameters");
 
-
     // test default
     oAppdesc.value = "윤이앱테스트";
     oProto.value = "http";
     oHost.value = "49.236.106.96";
     oPort.value = "8000";
-    oPath.value = "/zu4a/ytest_api05";
+    oPath.value = "/zu4a/ycordova_test";
     oParam.value = "sap-client=800&sap-language=EN";
+
+
+
+    oAPP.onStart();
 
 };

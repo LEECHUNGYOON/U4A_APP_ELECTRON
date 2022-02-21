@@ -31,12 +31,12 @@
     </style>
 </head>
 
-<body>    
+<body>
 
     <div class="u4aCdvQrReadArea">
         <div style="width: 100%;" id="reader"></div>
     </div>
-    
+
     <div class="u4aCdvCameraSelect_wrap">
         <select id="cameraSelect" name="camera_list" class="u4aCdvCamera_selOri u4aCdvDisplayHidden"
             onchange="oAPP.onQrScanStart();">
@@ -61,7 +61,7 @@
     <!-- Page Loading End -->
 
     <script src="cordova.js"></script>
-    <script src="js/common.js"></script>
+    <!-- <script src="js/common.js"></script> -->
 
     <script>
         var globalThis;
@@ -69,19 +69,22 @@
 
     <script src="js/html5-qrcode.min.js"></script>
     <script>
-        (function (oAPP) {
+        var oAPP = (function () {
             "use strict";
 
             /************************************************************************
              * Global Variables
              * **********************************************************************/
+            var oAPP = {};
             oAPP.QrScanOpt = {};
 
             const
                 REMOTE = require('electron').remote,
                 APP = REMOTE.app,
                 IPCRENDERER = require('electron').ipcRenderer,
-                CURRWIN = REMOTE.getCurrentWindow();
+                CURRWIN = REMOTE.getCurrentWindow(),
+                PATH = require('path'),
+                COMMON = require(PATH.join(__dirname, "\\js\\common.js"));                
 
             var html5QrCode,
                 aCAMERA = [];
@@ -217,7 +220,7 @@
              * **********************************************************************/
             oAPP.onQrScanStart = function () {
 
-                oAPP.setLoadingPageBusy('X');
+                COMMON.setLoadingPageBusy('X');
 
                 var isScanning = html5QrCode.isScanning;
                 if (isScanning) {
@@ -259,7 +262,7 @@
                         oAPP.onQrScanSuccess,
                         oAPP.onQrScanConsoleError
                     ).then(function (e) {
-                        oAPP.setLoadingPageBusy('');
+                        COMMON.setLoadingPageBusy('');
                     })
                     .catch(oAPP.onQrScanError);
 
@@ -268,7 +271,7 @@
             /************************************************************************
              * 스캔 성공시 결과를 리턴한다.
              * **********************************************************************/
-            oAPP.onQrScanSuccess = function (decodedText, decodedResult) {                
+            oAPP.onQrScanSuccess = function (decodedText, decodedResult) {
 
                 var sResultQrCode = decodedText,
                     sFormatName = decodedResult.result.format.formatName;
@@ -303,7 +306,7 @@
              * **********************************************************************/
             oAPP.onQrScanError = function (err) {
 
-                oAPP.setLoadingPageBusy('');
+                COMMON.setLoadingPageBusy('');
 
                 IPCRENDERER.send("if-qr-scan-error", {
                     "ERRCOD": "0017"
@@ -393,7 +396,9 @@
 
             IPCRENDERER.on("if-qr-scan-opt", oAPP.onIpcRenderer_if_qr_scan_opt);
 
-        })(oAPP);
+            return oAPP;
+            
+        })();
     </script>
 
 </body>

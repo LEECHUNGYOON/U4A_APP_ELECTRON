@@ -15,6 +15,7 @@
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
+    <icon src="www/img/logo.png" target="installer" />
     <preference name="AppendUserAgent" value="u4a_cordova_electron" />
     <preference name="ElectronSettingsFilePath" value="www/settings/u4a-electron-settings.json" />
 </widget>

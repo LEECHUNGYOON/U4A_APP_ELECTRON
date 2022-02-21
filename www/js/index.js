@@ -1,5 +1,10 @@
 let oAPP = (function() {
     "use strict";
+    
+    const PATH = require('path');
+
+    var COMMON = require(PATH.join(__dirname, "\\js\\common.js")),
+        SETTINGS = require(PATH.join(__dirname, "\\settings\\u4a-electron-settings.json"));
 
     return {
 
@@ -11,7 +16,8 @@ let oAPP = (function() {
         _port: "8000",
         _path: "/zu4a/ycordova_test",
         _params: "sap-client=800&sap-language=EN",
-        _isDev: true, // 운영 (고객) 배포용 일 경우 false로 반드시 변경!!
+        _isDev: SETTINGS.isDev, // 운영 (고객) 배포용 일 경우 false로 반드시 변경!!
+        // _isDev: true, // 운영 (고객) 배포용 일 경우 false로 반드시 변경!!
         _starturl: "",
         _Sessions: {
             "second": 0,
@@ -127,6 +133,10 @@ let oAPP = (function() {
                     return false;
                 }
 
+
+                var oCurrWin = oAPP.remote.getCurrentWindow();
+                oCurrWin.setIcon(oParam.ICONPATH);
+
                 this._protcol = oParam.PROTO;
                 this._host = oParam.HOST;
                 this._port = oParam.PORT;
@@ -167,37 +177,7 @@ let oAPP = (function() {
          * **********************************************************************/
         setCustomBrowserMenuBar: function() {
 
-            // MenuBar List
-            var aMenus = [{
-                key: "MENU01",
-                label: "File",
-                submenu: [{
-                    key: "MENU01_01",
-                    label: "Exit",
-                    click: oAPP.onMENU01_01
-                }]
-            }, {
-                key: "MENU02",
-                label: "View",
-                submenu: [{
-                        key: "MENU02_01",
-                        label: "Reload",
-                        accelerator: "Ctrl+R",
-                        click: oAPP.onMENU02_01
-                    },
-                    {
-                        key: "MENU02_02",
-                        label: "Toggle Developer Tool",
-                        accelerator: "Ctrl+Shift+I",
-                        click: oAPP.onMENU02_02
-                    }, {
-                        key: "MENU02_03",
-                        label: "Toggle Full Screen",
-                        accelerator: "F11",
-                        click: oAPP.onMENU02_03
-                    }
-                ]
-            }];
+            var aMenus = COMMON.getMenuBarList();
 
             // 현재 브라우저에 메뉴를 적용한다.
             var MENU = oAPP.remote.Menu,
@@ -207,48 +187,6 @@ let oAPP = (function() {
             oCurrWin.setMenu(oMenu);
 
         }, // end of setCustomBrowserMenuBar
-
-        /************************************************************************
-         * [Menu Bar Event] Exit
-         * **********************************************************************/
-        onMENU01_01: function(e) {
-
-            var oCurrWin = oAPP.remote.getCurrentWindow();
-            oCurrWin.close();
-
-        }, // end of onMENU01_01
-
-        /************************************************************************
-         * [Menu Bar Event] Reload
-         * **********************************************************************/
-        onMENU02_01: function() {
-
-            var oCurrWin = oAPP.remote.getCurrentWindow();
-            oCurrWin.webContents.reload();
-
-        }, // end of onMENU02_01
-
-        /************************************************************************
-         * [Menu Bar Event] Toggle Developer Tool
-         * **********************************************************************/
-        onMENU02_02: function() {
-
-            var oCurrWin = oAPP.remote.getCurrentWindow();
-            oCurrWin.webContents.openDevTools();
-
-        }, // end of onMENU02_02
-
-        /************************************************************************
-         * [Menu Bar Event] Toggle Full Screen
-         * **********************************************************************/
-        onMENU02_03: function() {
-
-            var oCurrWin = oAPP.remote.getCurrentWindow(),
-                bIsFull = oCurrWin.isFullScreen();
-
-            oCurrWin.setFullScreen(!bIsFull);
-
-        }, // end of onMENU02_03
 
         onChkerSeesion: function() {
 

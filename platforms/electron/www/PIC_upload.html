@@ -15,7 +15,8 @@
     </audio>
 
     <div class="u4aCdvCameraSelect_wrap">
-        <select id="cameraSelect" name="camera_list" class="u4aCdvCamera_selOri u4aCdvDisplayHidden" onchange="oAPP.onCameraStart();">
+        <select id="cameraSelect" name="camera_list" class="u4aCdvCamera_selOri u4aCdvDisplayHidden"
+            onchange="oAPP.onCameraStart();">
         </select>
     </div>
 
@@ -47,7 +48,7 @@
     <!-- Page Loading End -->
 
     <script src="cordova.js"></script>
-    <script src="js/common.js"></script>
+    <!-- <script src="js/common.js"></script> -->
     <script>
         (function (oAPP) {
             "use strict";
@@ -55,6 +56,10 @@
             /************************************************************************
              * Global Variables
              * **********************************************************************/
+            const
+                PATH = require('path'),
+                COMMON = require(PATH.join(__dirname, "\\js\\common.js"));
+
             oAPP.CameraPicOpt = {};
 
             const
@@ -204,7 +209,7 @@
              * **********************************************************************/
             oAPP.onCameraStart = function () {
 
-                oAPP.setLoadingPageBusy('X');
+                COMMON.setLoadingPageBusy('X');
 
                 if (window.stream) {
                     window.stream.getTracks().forEach(track => {
@@ -283,7 +288,7 @@
 
                 this.play();
 
-                oAPP.setLoadingPageBusy('');
+                COMMON.setLoadingPageBusy('');
 
             }; // end of oAPP.onVideoLoadedMetadata
 
