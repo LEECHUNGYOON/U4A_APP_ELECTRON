@@ -16,5 +16,6 @@
     "modal": false
   },
   "browserWindowInstance": {},
-  "autoplayPolicy": "no-user-gesture-required"
+  "autoplayPolicy": "no-user-gesture-required",
+  "isDev": true
 }

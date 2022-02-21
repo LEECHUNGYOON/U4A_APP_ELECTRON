@@ -8,17 +8,17 @@
         "closable": true,
         "modal": false,
         "autoHideMenuBar": true,
-        "webPreferences":{
+        "webPreferences": {
             "devTools": false,
             "nodeIntegration": true,
-            "enableRemoteModule":true,
-            "webSecurity" : false
+            "enableRemoteModule": true,
+            "webSecurity": false
         }
-       
+
     },
     "autoplayPolicy": "no-user-gesture-required",
     "browserWindowInstance": {
-        
-    }
 
+    },
+    "isDev": true
 }
