@@ -133,6 +133,8 @@ let oAPP = (function() {
                 this._path = oParam.PATH;
                 this._params = oParam.PARAM;
 
+                document.title = oParam.APPID;
+                
                 return true;
 
 
