@@ -91,6 +91,9 @@ let oAPP = (function () {
                     return;
                 }
 
+                // shortcut Icon path
+                oShortCutAppInfo.DATA.ICONPATH = sIconPath;
+
                 var sShortcutName = oAppInfo.APPID + ".lnk",
                     sShortcutUrl = oAPP.path.join(process.env.APPDATA, 'Microsoft', 'Windows', 'Start Menu', 'Programs', sShortcutName),
                     sTargetUrl = process.execPath;
