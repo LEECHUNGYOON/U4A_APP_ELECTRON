@@ -69,12 +69,13 @@
 
     <script src="js/html5-qrcode.min.js"></script>
     <script>
-        (function (oAPP) {
+        (function () {
             "use strict";
 
             /************************************************************************
              * Global Variables
              * **********************************************************************/
+            var oAPP = {};
             oAPP.QrScanOpt = {};
 
             const
@@ -395,7 +396,7 @@
 
             IPCRENDERER.on("if-qr-scan-opt", oAPP.onIpcRenderer_if_qr_scan_opt);
 
-        })(oAPP);
+        })();
     </script>
 
 </body>
