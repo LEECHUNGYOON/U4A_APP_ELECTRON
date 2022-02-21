@@ -26,7 +26,12 @@
 				resizable: false,
 				movable: false,
 				closable: true,
-				frame: false
+				frame: false,
+				webPreferences:{
+					webSecurity : false,
+					nodeIntegration: true,
+					enableRemoteModule:true
+				}       
 			};
 
 			//병렬 처리에 대한 결과리턴 이벤트 - 이벤트가 존재하지않을경우만 생성한다 
