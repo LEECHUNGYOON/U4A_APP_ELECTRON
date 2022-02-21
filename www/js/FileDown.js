@@ -86,14 +86,14 @@
 
         oFilePathPromise.then(function(oPaths) {
 
-            if (typeof oPaths[0] == "undefined") {
+            var sFolderPath = oPaths.filePaths[0];
+
+            if (typeof sFolderPath == "undefined") {
                 
                 // Busy 실행 끄기
                 oAPP.setBusy('');
                 return;
-            }
-
-            var sFolderPath = oPaths.filePaths[0];
+            }            
 
             // 선택한 폴더 안에 파일 다운
             oAPP.onFileDownInFolder(d, BLOB, sFolderPath);
