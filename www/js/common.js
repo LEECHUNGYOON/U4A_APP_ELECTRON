@@ -134,7 +134,7 @@ module.exports = (function () {
 
             // 브라우저를 닫을때 타는 이벤트
             oNewWin.on('closed', () => {
-                oWin = null;
+                oNewWin = null;
             });
 
         },
