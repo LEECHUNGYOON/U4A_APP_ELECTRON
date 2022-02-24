@@ -2,26 +2,21 @@ let oAPP = (function () {
     "use strict";
 
     const
+        REMOTE = require('electron').remote,
         PATH = require('path'),
-        COMMON = require(PATH.join(__dirname, "\\js\\common.js")),
-        SETTINGS = require(PATH.join(__dirname, "\\settings\\u4a-electron-settings.json"));
+        APP = REMOTE.app,
+        APPPATH = APP.getAppPath(),
+        COMMON = require(PATH.join(APPPATH, "\\js\\common.js"));
 
     return {
 
-        onStart : function(){
+        onStart: function () {
 
-            var oCurrWin = oAPP.remote.getCurrentWindow();
-
-            // 배포용 일 경우 메뉴바를 없앤다.
-            if (SETTINGS.isDev == false) {
-                oCurrWin.setMenu(null);
-                return;
-            }
-
-            var aMenus = COMMON.getMenuBarList();
+            var oCurrWin = oAPP.remote.getCurrentWindow(),
+                aMenus = COMMON.getMenuBarList();
 
             // 현재 브라우저에 메뉴를 적용한다.
-            var MENU = oAPP.remote.Menu,                
+            var MENU = oAPP.remote.Menu,
                 oMenu = MENU.buildFromTemplate(aMenus);
 
             oCurrWin.setMenu(oMenu);
@@ -67,12 +62,12 @@ let oAPP = (function () {
                 DATA: oAppInfo
             };
 
-            // 다운받을 폴더 지정하는 팝업에 대한 Option
+            // Shortcut 아이콘(.ico) 파일만 선택
             var options = {
                 title: "ShortCut Icon Select",
                 filters: [{
                     name: 'Images',
-                    extensions: ['ico', 'png']
+                    extensions: ['ico']
                 }],
                 properties: ['openFile', '']
             };
@@ -90,6 +85,9 @@ let oAPP = (function () {
                     oAPP.setBusy('');
                     return;
                 }
+
+                // shortcut Icon path
+                oShortCutAppInfo.DATA.ICONPATH = sIconPath;
 
                 var sShortcutName = oAppInfo.APPID + ".lnk",
                     sShortcutUrl = oAPP.path.join(process.env.APPDATA, 'Microsoft', 'Windows', 'Start Menu', 'Programs', sShortcutName),
@@ -109,7 +107,6 @@ let oAPP = (function () {
 
                 // Shortcut Download
                 oAPP.onShortCutDownload(oShortcutInfo);
-
 
             }).catch(function (e) {
 
@@ -412,8 +409,6 @@ window.onload = function () {
     oPort.value = "8000";
     oPath.value = "/zu4a/ycordova_test";
     oParam.value = "sap-client=800&sap-language=EN";
-
-
 
     oAPP.onStart();
 

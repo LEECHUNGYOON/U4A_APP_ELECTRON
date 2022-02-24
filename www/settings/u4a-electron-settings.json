@@ -12,9 +12,9 @@
             "devTools": false,
             "nodeIntegration": true,
             "enableRemoteModule": true,
+            "partition": "UI5FORABAP",
             "webSecurity": false
         }
-
     },
     "autoplayPolicy": "no-user-gesture-required",
     "browserWindowInstance": {

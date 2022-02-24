@@ -12,6 +12,7 @@
             "devTools": false,
             "nodeIntegration": true,
             "enableRemoteModule": true,
+            "partition": "UI5FORABAP",
             "webSecurity": false
         }
 

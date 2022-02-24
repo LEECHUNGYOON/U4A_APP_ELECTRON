@@ -15,7 +15,7 @@
     <img id="PrevImg" class="u4aCdvCameraCapImg"></img>
 
     <div id="u4aCdvCamera_wrap">
-        <div class="u4aCdvCamera_btm">       
+        <div class="u4aCdvCamera_btm">
             <div class="u4aCdvCamera_check u4aCdvCamera_bt">
                 <button type="button" class="u4aCdvCamera_checkBt" onclick="oAPP.onCameraCaptureSave();">
                     <img src="svg/check.svg" alt="button">
@@ -30,12 +30,15 @@
     </div>
 
     <script>
-        (function (oAPP) {
+        var oAPP = (function () {
             "use strict";
 
             /************************************************************************
              * Global Variables
              * **********************************************************************/
+
+            var oAPP = {};
+
             oAPP.CameraPicImgSrc;
 
             const
@@ -84,7 +87,9 @@
             // image Capture 한 base64를 전달받는다.
             IPCRENDERER.on("if-camera-pic-img", oAPP.onIpcRenderer_if_camera_pic_img);
 
-        })(oAPP);
+            return oAPP;
+            
+        })();
     </script>
 </body>
 

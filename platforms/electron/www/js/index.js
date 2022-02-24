@@ -1,12 +1,14 @@
-let oAPP = (function() {
+let oAPP = (function () {
     "use strict";
-    
-    debugger;
 
-    const PATH = require('path');
+    const
+        REMOTE = require('electron').remote,
+        APP = REMOTE.app,
+        APPPATH = APP.getAppPath(),
+        PATH = require('path');
 
-    var COMMON = require(PATH.join(__dirname, "\\js\\common.js")),
-        SETTINGS = require(PATH.join(__dirname, "\\settings\\u4a-electron-settings.json"));
+    var COMMON = require(PATH.join(APPPATH, "\\js\\commonn.js")),
+        SETTINGS = require(PATH.join(APPPATH, "\\settings\\u4a-electron-settings.json"));
 
     return {
 
@@ -18,7 +20,7 @@ let oAPP = (function() {
         _port: "8000",
         _path: "/zu4a/ycordova_test",
         _params: "sap-client=800&sap-language=EN",
-        _isDev: SETTINGS.isDev, // 운영 (고객) 배포용 일 경우 false로 반드시 변경!!
+        // _isDev: SETTINGS.isDev, // 운영 (고객) 배포용 일 경우 false로 반드시 변경!!
         // _isDev: true, // 운영 (고객) 배포용 일 경우 false로 반드시 변경!!
         _starturl: "",
         _Sessions: {
@@ -51,7 +53,7 @@ let oAPP = (function() {
         /************************************************************************
          * 초기 Start!!!
          * **********************************************************************/
-        onStart: function() {
+        onStart: function () {
 
             // 현재 PC에 설치된 브라우저 정보를 구한다.
             oAPP.onCheckInstalledBrowsers();
@@ -62,15 +64,15 @@ let oAPP = (function() {
             //실행 APP pause / resume 설정 
             oAPP.onChkerSeesion();
 
-            // 브라우저 Menu Bar 활성 / 비활성 
-            oAPP.onChkMenuBarDisplay();
+            // 개발용이면 경우 브라우저 Menu Bar를 커스텀 한다.
+            oAPP.setCustomBrowserMenuBar();
 
             //message Class
             this.onGetMsgClass("3");
             this.onGetMsgClass("E");
 
             //U4A APP 에서 요청 수신 이벤트
-            window.addEventListener('message', function(e) {
+            window.addEventListener('message', function (e) {
 
                 if (typeof e.data === "undefined") {
                     return;
@@ -92,7 +94,7 @@ let oAPP = (function() {
         /************************************************************************
          * ShortCut 생성화면 
          * **********************************************************************/
-        onShortCutCreate: function() {
+        onShortCutCreate: function () {
 
             var sUrl = oAPP.path.join(oAPP.app.getAppPath(), "admin.html");
 
@@ -105,7 +107,7 @@ let oAPP = (function() {
         /************************************************************************
          * ShortCut 생성할지 말지 여부 확인
          * **********************************************************************/
-        onCheckShortCut: function() {
+        onCheckShortCut: function () {
 
             /**
              * 파라미터 체크
@@ -135,11 +137,16 @@ let oAPP = (function() {
                     return false;
                 }
 
+                var oCurrWin = oAPP.remote.getCurrentWindow();
+                oCurrWin.setIcon(oParam.ICONPATH);
+
                 this._protcol = oParam.PROTO;
                 this._host = oParam.HOST;
                 this._port = oParam.PORT;
                 this._path = oParam.PATH;
                 this._params = oParam.PARAM;
+
+                document.title = oParam.APPID;
 
                 return true;
 
@@ -150,62 +157,30 @@ let oAPP = (function() {
 
         }, // end of onCheckShortCut
 
-        /************************************************************************
-         * 브라우저 Menu Bar 활성 / 비활성 
-         * **********************************************************************/
-        onChkMenuBarDisplay: function() {
+        // /************************************************************************
+        //  * 브라우저 Menu Bar 활성 / 비활성 
+        //  * **********************************************************************/
+        // onChkMenuBarDisplay: function() {
 
-            var oCurrWin = oAPP.remote.getCurrentWindow();
+        //     var oCurrWin = oAPP.remote.getCurrentWindow();
 
-            // 배포용 일 경우 메뉴바를 없앤다.
-            if (oAPP._isDev == false) {
-                oCurrWin.setMenu(null);
-                return;
-            }
+        //     // 배포용 일 경우 메뉴바를 없앤다.
+        //     if (oAPP._isDev == false) {
+        //         oCurrWin.setMenu(null);
+        //         return;
+        //     }
 
-            // 개발용이면 경우 브라우저 Menu Bar를 커스텀 한다.
-            oAPP.setCustomBrowserMenuBar();
+        //     // 개발용이면 경우 브라우저 Menu Bar를 커스텀 한다.
+        //     oAPP.setCustomBrowserMenuBar();
 
-        }, // end of onChkMenuBarDisplay
+        // }, // end of onChkMenuBarDisplay
 
         /************************************************************************
          * 개발용이면 경우 브라우저 Menu Bar를 커스텀 한다.
          * **********************************************************************/
-        setCustomBrowserMenuBar: function() {
+        setCustomBrowserMenuBar: function () {
 
             var aMenus = COMMON.getMenuBarList();
-
-            // // MenuBar List
-            // var aMenus = [{
-            //     key: "MENU01",
-            //     label: "File",
-            //     submenu: [{
-            //         key: "MENU01_01",
-            //         label: "Exit",
-            //         click: COMMON.onMENU01_01
-            //     }]
-            // }, {
-            //     key: "MENU02",
-            //     label: "View",
-            //     submenu: [{
-            //             key: "MENU02_01",
-            //             label: "Reload",
-            //             accelerator: "Ctrl+R",
-            //             click: COMMON.onMENU02_01
-            //         },
-            //         {
-            //             key: "MENU02_02",
-            //             label: "Toggle Developer Tool",
-            //             accelerator: "Ctrl+Shift+I",
-            //             click: COMMON.onMENU02_02
-            //         }, {
-            //             key: "MENU02_03",
-            //             label: "Toggle Full Screen",
-            //             accelerator: "F11",
-            //             click: COMMON.onMENU02_03
-            //         }
-            //     ]
-            // }];
 
             // 현재 브라우저에 메뉴를 적용한다.
             var MENU = oAPP.remote.Menu,
@@ -216,61 +191,19 @@ let oAPP = (function() {
 
         }, // end of setCustomBrowserMenuBar
 
-        // /************************************************************************
-        //  * [Menu Bar Event] Exit
-        //  * **********************************************************************/
-        // onMENU01_01: function(e) {
-
-        //     var oCurrWin = oAPP.remote.getCurrentWindow();
-        //     oCurrWin.close();
-
-        // }, // end of onMENU01_01
-
-        // /************************************************************************
-        //  * [Menu Bar Event] Reload
-        //  * **********************************************************************/
-        // onMENU02_01: function() {
-
-        //     var oCurrWin = oAPP.remote.getCurrentWindow();
-        //     oCurrWin.webContents.reload();
-
-        // }, // end of onMENU02_01
-
-        // /************************************************************************
-        //  * [Menu Bar Event] Toggle Developer Tool
-        //  * **********************************************************************/
-        // onMENU02_02: function() {
-
-        //     var oCurrWin = oAPP.remote.getCurrentWindow();
-        //     oCurrWin.webContents.openDevTools();
-
-        // }, // end of onMENU02_02
-
-        // /************************************************************************
-        //  * [Menu Bar Event] Toggle Full Screen
-        //  * **********************************************************************/
-        // onMENU02_03: function() {
-
-        //     var oCurrWin = oAPP.remote.getCurrentWindow(),
-        //         bIsFull = oCurrWin.isFullScreen();
-
-        //     oCurrWin.setFullScreen(!bIsFull);
-
-        // }, // end of onMENU02_03
-
-        onChkerSeesion: function() {
+        onChkerSeesion: function () {
 
             oAPP._Sessions.timeOUT = 28; //서비스 세션 TimeOut 초 
 
             //화면 백모드 (응용 프로그램은 배경으로 끼워 넣을 때)
-            document.addEventListener("pause", function() {
+            document.addEventListener("pause", function () {
 
                 oAPP._Sessions.lastTime = new Date().getTime();
 
             }, false);
 
             //화면 활성 (응용 프로그램이 배경에서 검색 될 때 발생)
-            document.addEventListener("resume", function() {
+            document.addEventListener("resume", function () {
 
                 var iLastTime = oAPP._Sessions.lastTime;
 
@@ -290,12 +223,12 @@ let oAPP = (function() {
 
         },
 
-        ontest: function() {
+        ontest: function () {
 
 
         }, //ontest
 
-        onAppLoadUrl: function() {
+        onAppLoadUrl: function () {
 
             if (oAPP._starturl !== "") {
                 return;
@@ -305,7 +238,7 @@ let oAPP = (function() {
 
         },
 
-        getStartUrlPath: function() {
+        getStartUrlPath: function () {
 
             var sUrl = "";
 
@@ -331,7 +264,7 @@ let oAPP = (function() {
             return sUrl;
 
         },
-        onActionExcute: function(actnm, if_data) {
+        onActionExcute: function (actnm, if_data) {
 
             //--*[공통] 요청액션 처리에 펑션을 생성 처리후 실행
             //--*       js 폴더안에 처리 예:xxxx.js 파일이 존재해야함!!
@@ -350,13 +283,13 @@ let oAPP = (function() {
 
             // alert();
 
-            oAPP.onLoadJS(jsnm, function() {
+            oAPP.onLoadJS(jsnm, function () {
                 oAPP[fm](if_data);
             }, false);
 
         }, //end onActionExcute
 
-        onLoadJS: function(u, cb, aSync) {
+        onLoadJS: function (u, cb, aSync) {
 
             //js file load
             var oJS = document.createElement('script');
@@ -371,7 +304,7 @@ let oAPP = (function() {
 
         }, //end onLoadJS
 
-        onCopyJSON: function(j) {
+        onCopyJSON: function (j) {
 
             var Ljson = JSON.stringify(j);
 
@@ -382,7 +315,7 @@ let oAPP = (function() {
         /************************************************************************
          * hex -> ascii
          * **********************************************************************/
-        hex_to_ascii: function(str1) {
+        hex_to_ascii: function (str1) {
 
             var hex = str1.toString();
             var str = '';
@@ -398,7 +331,7 @@ let oAPP = (function() {
         /************************************************************************
          * base64 -> ArrayBuffer
          * **********************************************************************/
-        base64ToArrayBuffer: function(base64) {
+        base64ToArrayBuffer: function (base64) {
 
             var binary_string = window.atob(base64);
             var len = binary_string.length;
@@ -415,7 +348,7 @@ let oAPP = (function() {
         /************************************************************************
          * Base64 -> Blob
          * **********************************************************************/
-        base64toBlob: function(b64Data, contentType, sliceSize) {
+        base64toBlob: function (b64Data, contentType, sliceSize) {
 
             if (b64Data == "" || b64Data == undefined) return null;
 
@@ -445,12 +378,12 @@ let oAPP = (function() {
 
         }, // end of oAPP.b64toBlob
 
-        onGetMsgClass: function(lng) {
+        onGetMsgClass: function (lng) {
 
             var langu = this.onConvLangu(lng),
                 oHttp = new XMLHttpRequest();
 
-            oHttp.onreadystatechange = function() {
+            oHttp.onreadystatechange = function () {
 
                 if (this.readyState == 4 && this.status == 200) {
                     oAPP._msgClass[langu] = JSON.parse(this.responseText);
@@ -466,11 +399,11 @@ let oAPP = (function() {
 
         }, //onGetMsgClass
 
-        onGetMsgTxt: function(cod) {
+        onGetMsgTxt: function (cod) {
             return oAPP._msgClass[oAPP._langu][cod];
         }, //onGetMsgTxt
 
-        onConvLangu: function(lng) {
+        onConvLangu: function (lng) {
 
             //sap Langu key to external key
             var Lan = "";
@@ -494,7 +427,7 @@ let oAPP = (function() {
 
         }, //onConvLangu
 
-        openModalWindow: function(url, option, sendData) {
+        openModalWindow: function (url, option, sendData) {
             //모달 윈도우 팝업 펑션 
 
             var sOption = option;
@@ -504,7 +437,7 @@ let oAPP = (function() {
 
             const oWin = new oAPP.remote.BrowserWindow(sOption);
             oWin.loadURL(url);
-            oWin.webContents.on('did-finish-load', function() {
+            oWin.webContents.on('did-finish-load', function () {
                 //oWin.webContents.openDevTools();
                 oWin.webContents.send('if_barcodeMTXdata', {
                     winid: oWin.id,
@@ -517,7 +450,7 @@ let oAPP = (function() {
 
         }, //end openModalWindow
 
-        findIPCEventName: function(arr, name) {
+        findIPCEventName: function (arr, name) {
             //ipc 통신 callback event 여부 점검 펑션 
             if (typeof arr === "undefined") {
                 return;
@@ -541,7 +474,7 @@ let oAPP = (function() {
 
         }, //end findEventName
 
-        getAggPram: function() {
+        getAggPram: function () {
 
             var oSharOBJ = oAPP.remote.getGlobal('sharedObject');
             if (typeof oSharOBJ === 'undefined') {
@@ -586,7 +519,7 @@ let oAPP = (function() {
         }, //end getAggPram
 
         // Busy Indicator
-        setBusy: function(bIsBusy) {
+        setBusy: function (bIsBusy) {
 
             var oBusy = document.getElementById("u4aWsBusyIndicator");
 
@@ -609,7 +542,7 @@ let oAPP = (function() {
         },
 
         // Loading Page Busy Indicator
-        setLoadingPageBusy: function(bIsShow) {
+        setLoadingPageBusy: function (bIsShow) {
 
             var oLoadPg = document.getElementById("u4a_main_load");
 
@@ -626,7 +559,7 @@ let oAPP = (function() {
         },
 
         // 마우스 포커스 해제 하는 펑션
-        onFocusout: function() {
+        onFocusout: function () {
 
             document.getElementById("u4amainBody").focus();
 
@@ -645,7 +578,7 @@ let oAPP = (function() {
         /************************************************************************
          * 현재 pc에 설치된 브라우저 정보를 확인.
          * **********************************************************************/
-        onCheckInstalledBrowsers: function() {
+        onCheckInstalledBrowsers: function () {
 
             // Default Browser 정보를 구한다.
             var aDefaultBrowsers = oAPP._aDefaultBrowsers,
@@ -690,7 +623,7 @@ let oAPP = (function() {
 
         }, // end of onCheckInstalledBrowsers
 
-        getBrowserInfoPromise: function(aDefaultBrowsers, index) {
+        getBrowserInfoPromise: function (aDefaultBrowsers, index) {
 
             var oREGEDIT = oAPP.regedit,
                 oDefBrows = aDefaultBrowsers[index],
@@ -739,11 +672,11 @@ let oAPP = (function() {
         /************************************************************************
          * DeviceReady
          * **********************************************************************/
-        onDeviceReady: function() {
+        onDeviceReady: function () {
             oAPP.onStart();
         },
 
-        onNetWorkOnline: function() {
+        onNetWorkOnline: function () {
 
             // ShortCut 생성할지 말지 여부 확인
             if (oAPP.onCheckShortCut() == false) {
@@ -762,7 +695,7 @@ let oAPP = (function() {
             oAPP.showNetworkDisconnBlock('');
 
             var oFrame = document.getElementById("u4aAppiFrame");
-            oFrame.onload = function() {
+            oFrame.onload = function () {
                 oAPP.setLoadingPageBusy('');
             };
 
@@ -785,14 +718,14 @@ let oAPP = (function() {
 
         }, // end of onNetWorkOnline
 
-        onNetWorkOffline: function() {
+        onNetWorkOffline: function () {
 
             // 장막을 펼친다.
             oAPP.showNetworkDisconnBlock('X');
 
         }, // end of onNetWorkOffline
 
-        showNetworkDisconnBlock: function(bIsShow) {
+        showNetworkDisconnBlock: function (bIsShow) {
 
             var oLoadPg = document.getElementById("u4a_neterr");
             if (!oLoadPg) {

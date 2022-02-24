@@ -7,7 +7,7 @@
         "webPreferences": {
             "devTools": true,
             "nodeIntegration": true,
-            "enableRemoteModule": true            
+            "enableRemoteModule": true
         }
 
     },

@@ -3,17 +3,18 @@
     "height": 800,
     "width": 800,
     "darkTheme": true,
+    "resizable": true,
+    "movable": true,
+    "closable": true,
+    "modal": false,
     "autoHideMenuBar": true,
     "webPreferences": {
       "devTools": true,
       "nodeIntegration": true,
       "enableRemoteModule": true,
+      "partition": "UI5FORABAP",
       "webSecurity": false
-    },
-    "resizable": true,
-    "movable": true,
-    "closable": true,
-    "modal": false
+    }
   },
   "browserWindowInstance": {},
   "autoplayPolicy": "no-user-gesture-required",
