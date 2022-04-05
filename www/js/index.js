@@ -1,6 +1,8 @@
 let oAPP = (function () {
     "use strict";
 
+    debugger;
+
     const
         REMOTE = require('electron').remote,
         APP = REMOTE.app,
@@ -20,8 +22,6 @@ let oAPP = (function () {
         _port: "8000",
         _path: "/zu4a/ycordova_test",
         _params: "sap-client=800&sap-language=EN",
-        // _isDev: SETTINGS.isDev, // 운영 (고객) 배포용 일 경우 false로 반드시 변경!!
-        // _isDev: true, // 운영 (고객) 배포용 일 경우 false로 반드시 변경!!
         _starturl: "",
         _Sessions: {
             "second": 0,
@@ -92,9 +92,36 @@ let oAPP = (function () {
         },
 
         /************************************************************************
+         * Electron version Check
+         * 2.0 이상만 실행되어야 함.
+         * **********************************************************************/
+        onElectronVersionCheck: function () {
+
+            var oCurrWin = oAPP.remote.getCurrentWindow();
+            var ver = parseFloat(cordova.version);
+
+            if (2.0 >= ver) {
+
+                alert("electron version이 2.0 이상이여야 합니다. Application을 종료합니다.");
+                oCurrWin.close();
+
+                return false;
+
+            }
+
+            return true;
+
+        }, // end of onElectronVersionCheck
+
+        /************************************************************************
          * ShortCut 생성화면 
          * **********************************************************************/
         onShortCutCreate: function () {
+            
+            // var bIsVer = oAPP.onElectronVersionCheck();
+            // if(!bIsVer){
+            //     return;
+            // }
 
             var sUrl = oAPP.path.join(oAPP.app.getAppPath(), "admin.html");
 
@@ -673,10 +700,18 @@ let oAPP = (function () {
          * DeviceReady
          * **********************************************************************/
         onDeviceReady: function () {
+
+            debugger;
+
+            console.log("onDeviceReady");
+
             oAPP.onStart();
+
         },
 
         onNetWorkOnline: function () {
+
+            console.log("onNetWorkOnline");
 
             // ShortCut 생성할지 말지 여부 확인
             if (oAPP.onCheckShortCut() == false) {

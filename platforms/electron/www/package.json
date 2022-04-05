@@ -1,7 +1,7 @@
 {
   "main": "cdv-electron-main.js",
-  "name": "com.template.app",
-  "displayName": "template",
+  "name": "com.u4a_electron_app.app",
+  "displayName": "u4a_electron_app",
   "version": "1.0.0",
   "description": "A U4A IDE Platform RnD Team application that responds to the deviceready event.",
   "dependencies": {

@@ -24,6 +24,8 @@ let oAPP = (function () {
         },
 
         onCreateShortcut: function () {
+            
+            debugger;
 
             event.preventDefault();
 
@@ -31,6 +33,7 @@ let oAPP = (function () {
 
             var oAppid = document.getElementById("appid"),
                 oAppdesc = document.getElementById("appdesc"),
+                oShortcut = document.getElementById("shortcut"),
                 oProto = document.getElementById("proto"),
                 oHost = document.getElementById("host"),
                 oPort = document.getElementById("port"),
@@ -40,6 +43,7 @@ let oAPP = (function () {
             var oAppInfo = {
                 APPID: oAppid.value,
                 APPDESC: oAppdesc.value,
+                SHORTCUT: (oShortcut.files[0] || ""),
                 PROTO: oProto.value,
                 HOST: oHost.value,
                 PORT: oPort.value,
