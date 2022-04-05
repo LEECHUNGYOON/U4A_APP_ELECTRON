@@ -55,7 +55,7 @@ let oAPP = (function() {
             if (oRet.CODE == "E") {
 
                 // alert(oRet.MSG);
-                DIALOG.showMessageBox(oCurrView, {
+                DIALOG.showMessageBoxSync(oCurrView, {
                     title: "Error!",
                     message: oRet.MSG,
                     type: "error",
@@ -86,10 +86,9 @@ let oAPP = (function() {
 
             oFilePathPromise.then(function(oPaths) {
 
-                var sDefaultIcoPath = PATH.join(APPPATH, "\\img\\logo.ico"),
-                    sIconPath = oPaths.filePaths[0];
+                var sIconPath = oPaths.filePaths[0];
 
-                var iBtnIndex = DIALOG.showMessageBox(oCurrView, {
+                var iBtnIndex = DIALOG.showMessageBoxSync(oCurrView, {
                     title: "Create Shortcut",
                     message: "Do you want to Create Shortcut?",
                     type: "question",
@@ -98,18 +97,16 @@ let oAPP = (function() {
 
                 // cancel Button 선택시 빠져나간다.
                 if (iBtnIndex == 1) {
+                    oAPP.setBusy('');
                     return;
                 }
 
                 if (typeof sIconPath == "undefined") {
 
-                    sIconPath = sDefaultIcoPath;
+                    sIconPath = process.execPath;
 
-                    // // Busy 실행 끄기
-                    // oAPP.setBusy('');
-                    // return;
                 }
-                
+
                 // shortcut Icon path
                 oShortCutAppInfo.DATA.ICONPATH = sIconPath;
 
@@ -234,28 +231,28 @@ let oAPP = (function() {
 
             // 입력 여부 확인
             if (!sAppId) {
-                oRetMsg.MSG = "APPID를 입력하세요";
+                oRetMsg.MSG = "Shortcut Name을 입력하세요";
                 return oRetMsg;
             }
 
             // 특수문자 입력 체크
             var bIsValid = oAPP.checkSpecial(sAppId);
             if (bIsValid) {
-                oRetMsg.MSG = "특수문자를 포함하면 안됩니다";
+                oRetMsg.MSG = "[Shortcut Name] 특수문자를 포함하면 안됩니다";
                 return oRetMsg;
             }
 
             // 공백 있음
             var bIsValid = oAPP.checkSpace(sAppId);
             if (bIsValid) {
-                oRetMsg.MSG = "공백을 포함하면 안됩니다";
+                oRetMsg.MSG = "[Shortcut Name] 공백을 포함하면 안됩니다";
                 return oRetMsg;
             }
 
             // 영문+숫자
             var bIsValid = oAPP.checkEngNum(sAppId);
             if (!bIsValid) {
-                oRetMsg.MSG = "영문 + 숫자만 입력가능합니다";
+                oRetMsg.MSG = "[Shortcut Name] 영문 + 숫자만 입력가능합니다";
                 return oRetMsg;
             }
 
