@@ -15,7 +15,6 @@
             "partition": "UI5FORABAP",
             "webSecurity": false
         }
-
     },
     "autoplayPolicy": "no-user-gesture-required",
     "browserWindowInstance": {

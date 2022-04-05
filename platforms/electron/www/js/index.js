@@ -7,7 +7,7 @@ let oAPP = (function () {
         APPPATH = APP.getAppPath(),
         PATH = require('path');
 
-    var COMMON = require(PATH.join(APPPATH, "\\js\\commonn.js")),
+    var COMMON = require(PATH.join(APPPATH, "\\js\\common.js")),
         SETTINGS = require(PATH.join(APPPATH, "\\settings\\u4a-electron-settings.json"));
 
     return {
