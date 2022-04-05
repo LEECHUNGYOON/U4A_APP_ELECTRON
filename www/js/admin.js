@@ -1,4 +1,4 @@
-let oAPP = (function () {
+let oAPP = (function() {
     "use strict";
 
     const
@@ -6,11 +6,12 @@ let oAPP = (function () {
         PATH = require('path'),
         APP = REMOTE.app,
         APPPATH = APP.getAppPath(),
+        DIALOG = REMOTE.require('electron').dialog,
         COMMON = require(PATH.join(APPPATH, "\\js\\common.js"));
 
     return {
 
-        onStart: function () {
+        onStart: function() {
 
             var oCurrWin = oAPP.remote.getCurrentWindow(),
                 aMenus = COMMON.getMenuBarList();
@@ -23,9 +24,9 @@ let oAPP = (function () {
 
         },
 
-        onCreateShortcut: function () {
-            
-            debugger;
+        onCreateShortcut: function() {
+
+            var oCurrView = REMOTE.getCurrentWindow();
 
             event.preventDefault();
 
@@ -33,7 +34,6 @@ let oAPP = (function () {
 
             var oAppid = document.getElementById("appid"),
                 oAppdesc = document.getElementById("appdesc"),
-                oShortcut = document.getElementById("shortcut"),
                 oProto = document.getElementById("proto"),
                 oHost = document.getElementById("host"),
                 oPort = document.getElementById("port"),
@@ -43,7 +43,6 @@ let oAPP = (function () {
             var oAppInfo = {
                 APPID: oAppid.value,
                 APPDESC: oAppdesc.value,
-                SHORTCUT: (oShortcut.files[0] || ""),
                 PROTO: oProto.value,
                 HOST: oHost.value,
                 PORT: oPort.value,
@@ -55,7 +54,13 @@ let oAPP = (function () {
             var oRet = oAPP.onCheckAppInfo(oAppInfo);
             if (oRet.CODE == "E") {
 
-                alert(oRet.MSG);
+                // alert(oRet.MSG);
+                DIALOG.showMessageBox(oCurrView, {
+                    title: "Error!",
+                    message: oRet.MSG,
+                    type: "error",
+                    buttons: ["OK"]
+                });
 
                 oAPP.setBusy('');
 
@@ -79,17 +84,32 @@ let oAPP = (function () {
             //파일 폴더 디렉토리 선택 팝업 
             var oFilePathPromise = oAPP.remote.dialog.showOpenDialog(oAPP.remote.getCurrentWindow(), options);
 
-            oFilePathPromise.then(function (oPaths) {
+            oFilePathPromise.then(function(oPaths) {
 
-                var sIconPath = oPaths.filePaths[0];
+                var sDefaultIcoPath = PATH.join(APPPATH, "\\img\\logo.ico"),
+                    sIconPath = oPaths.filePaths[0];
 
-                if (typeof sIconPath == "undefined") {
+                var iBtnIndex = DIALOG.showMessageBox(oCurrView, {
+                    title: "Create Shortcut",
+                    message: "Do you want to Create Shortcut?",
+                    type: "question",
+                    buttons: ["Create", "Cancel"]
+                });
 
-                    // Busy 실행 끄기
-                    oAPP.setBusy('');
+                // cancel Button 선택시 빠져나간다.
+                if (iBtnIndex == 1) {
                     return;
                 }
 
+                if (typeof sIconPath == "undefined") {
+
+                    sIconPath = sDefaultIcoPath;
+
+                    // // Busy 실행 끄기
+                    // oAPP.setBusy('');
+                    // return;
+                }
+                
                 // shortcut Icon path
                 oShortCutAppInfo.DATA.ICONPATH = sIconPath;
 
@@ -112,9 +132,14 @@ let oAPP = (function () {
                 // Shortcut Download
                 oAPP.onShortCutDownload(oShortcutInfo);
 
-            }).catch(function (e) {
+            }).catch(function(e) {
 
-                alert(e.toString());
+                DIALOG.showMessageBox(oCurrView, {
+                    title: "Error!",
+                    message: e.toString(),
+                    type: "error",
+                    buttons: ["OK"]
+                });
 
                 // var sMsg = oAPP.onGetMsgTxt("0019"); /* 다운로드 폴더 디렉토리 선택 실패! */
                 // alert(sMsg);
@@ -128,7 +153,7 @@ let oAPP = (function () {
 
         },
 
-        onShortCutDownload: function (oShortcutInfo) {
+        onShortCutDownload: function(oShortcutInfo) {
 
             //실행~
             var res = oAPP.shell.writeShortcutLink(oShortcutInfo.shortcutUrl, {
@@ -158,7 +183,7 @@ let oAPP = (function () {
         },
 
         // 앱 정보 입력 체크
-        onCheckAppInfo: function (oTargetData) {
+        onCheckAppInfo: function(oTargetData) {
 
             /***********************************************************************************
              *  APP ID 체크
@@ -199,7 +224,7 @@ let oAPP = (function () {
         }, // end of oAPP.onCheckAppInfo      
 
         // APPID 입력 체크
-        checkValidAppId: function (sAppId) {
+        checkValidAppId: function(sAppId) {
 
             var oRetMsg = {
                 CODE: "E",
@@ -241,7 +266,7 @@ let oAPP = (function () {
         }, // end of oAPP.checkValidAppId
 
         // App Description 입력 체크
-        checkValidAppDesc: function (sAppDesc) {
+        checkValidAppDesc: function(sAppDesc) {
 
             var oRetMsg = {
                 CODE: "E",
@@ -262,7 +287,7 @@ let oAPP = (function () {
         }, // end of oAPP.checkValidAppDesc
 
         // Protocol 입력 체크
-        checkValidProtocol: function (sProto) {
+        checkValidProtocol: function(sProto) {
 
             var oRetMsg = {
                 CODE: "E",
@@ -283,7 +308,7 @@ let oAPP = (function () {
         }, // end of oAPP.checkValidProtocol
 
         // Host 입력 체크
-        checkValidHost: function (sHost) {
+        checkValidHost: function(sHost) {
 
             var oRetMsg = {
                 CODE: "E",
@@ -304,7 +329,7 @@ let oAPP = (function () {
         }, // end of oAPP.checkValidHost
 
         // Path 입력 체크
-        checkValidPath: function (sPath) {
+        checkValidPath: function(sPath) {
 
             var oRetMsg = {
                 CODE: "E",
@@ -325,7 +350,7 @@ let oAPP = (function () {
         }, // end of oAPP.checkValidPath
 
         // 영문 + 숫자 입력 체크
-        checkEngNum: function (str) {
+        checkEngNum: function(str) {
             var regExp = /^[A-Za-z]|^[A-Za-z]+[A-Za-z0-9]+/g;
 
             if (regExp.test(str)) {
@@ -337,7 +362,7 @@ let oAPP = (function () {
         },
 
         // 특수문자 체크
-        checkSpecial: function (str) {
+        checkSpecial: function(str) {
             var special_pattern = /[`~!@#$%^&*|\\\'\";:\/?]/gi;
             if (special_pattern.test(str) == true) {
                 console.log("특수문자 걸림!!");
@@ -348,7 +373,7 @@ let oAPP = (function () {
         },
 
         // 공백(스페이스 바) 체크 
-        checkSpace: function (str) {
+        checkSpace: function(str) {
             if (str.search(/\s/) !== -1) {
                 console.log("공백 있음!!");
                 return true;
@@ -358,7 +383,7 @@ let oAPP = (function () {
         },
 
         // 첨부파일 이미지 사이즈 용량 제한
-        checkFilesSize: function (input) {
+        checkFilesSize: function(input) {
 
             if (input.files && input.files[0].size > (1 * 1024 * 1024)) {
                 alert("파일 사이즈가 1mb 를 넘습니다.");
@@ -367,7 +392,7 @@ let oAPP = (function () {
 
         }, // end of oAPP.checkFilesSize
 
-        setBusy: function (bIsBusy) {
+        setBusy: function(bIsBusy) {
 
             var oBusy = document.getElementById("u4aWsBusyIndicator");
 
@@ -396,7 +421,7 @@ oAPP.BrowserWindow = oAPP.remote.require('electron').BrowserWindow;
 oAPP.path = oAPP.remote.require('path');
 oAPP.shell = require('electron').shell;
 
-window.onload = function () {
+window.onload = function() {
 
 
     var oAppdesc = document.getElementById("appdesc"),
@@ -406,13 +431,13 @@ window.onload = function () {
         oPath = document.getElementById("path"),
         oParam = document.getElementById("parameters");
 
-    // test default
-    oAppdesc.value = "윤이앱테스트";
-    oProto.value = "http";
-    oHost.value = "49.236.106.96";
-    oPort.value = "8000";
-    oPath.value = "/zu4a/ycordova_test";
-    oParam.value = "sap-client=800&sap-language=EN";
+    // // test default
+    // oAppdesc.value = "윤이앱테스트";
+    // oProto.value = "http";
+    // oHost.value = "49.236.106.96";
+    // oPort.value = "8000";
+    // oPath.value = "/zu4a/ycordova_test";
+    // oParam.value = "sap-client=800&sap-language=EN";
 
     oAPP.onStart();
 

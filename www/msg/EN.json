@@ -16,5 +16,6 @@
     "0015" : "The camera device does not exist.",
     "0016" : "Media is not supported!",
     "0017" : "Qr Barcode Reading Fail!",
-    "0018" : "Failed to read camera information!"
+    "0018" : "Failed to read camera information!",
+    "0019" : "Do you want to Create Shortcut?"
 }
