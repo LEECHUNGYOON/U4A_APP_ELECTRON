@@ -4,8 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>U4A Shortcut Creator</title>
-    <meta name="viewport"
-          content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
     <style>
         *,
         *:before,
@@ -252,19 +251,15 @@
         <!-- APP ID -->
         <div class="form-example">
             <label for="appid">ShortCut Name:<span class="required">*</span> </label>
-            <input type="text"
-                   id="appid"
-                   name="appid"
-                   maxlength="20"
-                   required />
+            <input type="text" id="appid" name="appid" maxlength="20" required />
+            <span>바로가기 아이콘 이름</span>
         </div>
 
         <!-- APP DESC -->
         <div class="form-example">
             <label for="appdesc">ShortCut Desc: </label>
-            <input type="text"
-                   id="appdesc"
-                   name="appdesc" />
+            <input type="text" id="appdesc" name="appdesc" />
+            <span>바로가기에 대한 설명</span>
         </div>
 
         <!-- Shortcut Icon -->
@@ -282,13 +277,10 @@
         </div> -->
 
         <!-- Protocol -->
-        <div class="form-example"
-             style="height:31px;">
+        <div class="form-example" style="height:31px;">
             <label for="proto">Protocol: <span class="required">*</span></label>
-            <select id="proto"
-                    name="choice">
-                <option value="http"
-                        selected>http</option>
+            <select id="proto" name="choice">
+                <option value="http" selected>http</option>
                 <option value="https">https</option>
             </select>
             <!-- <input type="text" id="proto" name="proto" /> -->
@@ -297,33 +289,29 @@
         <!-- Host -->
         <div class="form-example">
             <label for="host">Host(or IP): <span class="required">*</span></label>
-            <input type="text"
-                   id="host"
-                   name="host" />
+            <input type="text" id="host" name="host" />
+            <span>예)erpdev.u4a.com 또는 11.11.11.1</span>
         </div>
 
         <!-- Port -->
         <div class="form-example">
             <label for="port">Port: </label>
-            <input type="text"
-                   id="port"
-                   name="port" />
+            <input type="text" id="port" name="port" />
+            <span>예)8000, 8080, 43300</span>
         </div>
 
         <!-- Path(U4A) -->
         <div class="form-example">
             <label for="path">Path(U4A): <span class="required">*</span></label>
-            <input type="text"
-                   id="path"
-                   name="path" />
+            <input type="text" id="path" name="path" />
+            <span>예) /zu4a/[application 명]</span>
         </div>
 
         <!-- Parameters -->
         <div class="form-example">
             <label for="parameters">Parameters: </label>
-            <input type="text"
-                   id="parameters"
-                   name="parameters" />
+            <input type="text" id="parameters" name="parameters" />
+            <span>예)sap-language=EN&sap-client=800</span>
         </div>
 
         <!-- create Button -->
@@ -333,23 +321,12 @@
     </div>
 
     <!-- Busy Indicator Start -->
-    <div id="u4aWsBusyIndicator"
-         data-sap-ui-popup="id-1622786200065-234"
-         class="u4aWsBusyIndicator sapUiUserSelectable"
-         style="position: absolute; visibility: hidden; display: block; top: 0px; height: 100%; width: 100%; left: 0px;">
-        <div class="sapUiBusy"
-             tabindex="0"
-             role="progressbar"
-             alt=""
-             title="Please wait"></div>
+    <div id="u4aWsBusyIndicator" data-sap-ui-popup="id-1622786200065-234" class="u4aWsBusyIndicator sapUiUserSelectable"
+        style="position: absolute; visibility: hidden; display: block; top: 0px; height: 100%; width: 100%; left: 0px;">
+        <div class="sapUiBusy" tabindex="0" role="progressbar" alt="" title="Please wait"></div>
         <div class="sapUiLocalBusyIndicator sapUiLocalBusyIndicatorSizeBig sapUiLocalBusyIndicatorFade"
-             role="progressbar"
-             aria-valuemin="0"
-             aria-valuemax="100"
-             aria-valuetext="Busy"
-             alt=""
-             tabindex="0"
-             title="Please wait">
+            role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuetext="Busy" alt="" tabindex="0"
+            title="Please wait">
             <div class="sapUiLocalBusyIndicatorAnimation sapUiLocalBusyIndicatorAnimStandard">
                 <div></div>
                 <div></div>
