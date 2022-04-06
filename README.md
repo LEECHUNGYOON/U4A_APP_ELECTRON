@@ -22,7 +22,7 @@ if (cdvElectronSettings.browserWindow.webPreferences.devTools) {
 
 /www/settings/u4a-electron-settings.json 안에
 
-_isDev : false;
+isDev : false;
 
 나머지는
-_isDev : true로 반드시 변경 할 것!!;
+isDev : true로 반드시 변경 할 것!!;
