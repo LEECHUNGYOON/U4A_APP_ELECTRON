@@ -50,7 +50,7 @@ module.exports = (function () {
                         label: "Toggle Developer Tool",
                         accelerator: "Ctrl+Shift+I",
                         click: this.onMENU02_02,
-                        visible: SETTINGS._isDev
+                        visible: SETTINGS.isDev
                     }, {
                         key: "MENU02_03",
                         label: "Toggle Full Screen",
