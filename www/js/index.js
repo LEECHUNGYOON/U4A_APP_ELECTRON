@@ -1,8 +1,6 @@
 let oAPP = (function () {
     "use strict";
 
-    debugger;
-
     const
         REMOTE = require('electron').remote,
         APP = REMOTE.app,
@@ -117,11 +115,6 @@ let oAPP = (function () {
          * ShortCut 생성화면 
          * **********************************************************************/
         onShortCutCreate: function () {
-            
-            // var bIsVer = oAPP.onElectronVersionCheck();
-            // if(!bIsVer){
-            //     return;
-            // }
 
             var sUrl = oAPP.path.join(oAPP.app.getAppPath(), "admin.html");
 
@@ -165,7 +158,11 @@ let oAPP = (function () {
                 }
 
                 var oCurrWin = oAPP.remote.getCurrentWindow();
-                oCurrWin.setIcon(oParam.ICONPATH);
+
+                // ICON PATH가 있을 경우에만 설정
+                if (oParam.ICONPATH) {
+                    oCurrWin.setIcon(oParam.ICONPATH);
+                }
 
                 this._protcol = oParam.PROTO;
                 this._host = oParam.HOST;
@@ -182,25 +179,7 @@ let oAPP = (function () {
                 return false;
             }
 
-        }, // end of onCheckShortCut
-
-        // /************************************************************************
-        //  * 브라우저 Menu Bar 활성 / 비활성 
-        //  * **********************************************************************/
-        // onChkMenuBarDisplay: function() {
-
-        //     var oCurrWin = oAPP.remote.getCurrentWindow();
-
-        //     // 배포용 일 경우 메뉴바를 없앤다.
-        //     if (oAPP._isDev == false) {
-        //         oCurrWin.setMenu(null);
-        //         return;
-        //     }
-
-        //     // 개발용이면 경우 브라우저 Menu Bar를 커스텀 한다.
-        //     oAPP.setCustomBrowserMenuBar();
-
-        // }, // end of onChkMenuBarDisplay
+        }, // end of onCheckShortCut        
 
         /************************************************************************
          * 개발용이면 경우 브라우저 Menu Bar를 커스텀 한다.
@@ -700,8 +679,6 @@ let oAPP = (function () {
          * DeviceReady
          * **********************************************************************/
         onDeviceReady: function () {
-
-            debugger;
 
             console.log("onDeviceReady");
 
