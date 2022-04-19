@@ -80,10 +80,39 @@ let oAPP = (function () {
                     return;
                 }
 
-                //요청액션 동적 처리 펑션 호출 => u4a에서 요청하는 json object 정보는 반드시 (REQCD, IF_DATA) 존재해야함!!
-                // REQCD: 처리액션코드및 JS 파일,펑션명으로 구성됨  IF_DATA: 요청 Data free style JSON 형태
-
-                oAPP.onActionExcute(e.data.REQCD, e.data.IF_DATA);
+                switch (e.data.REQCD) {
+                    case "API_LOAD":
+                        //U4A 서비스에서 생성한 스크립트 소스로 oAPP <-- 오브젝트(펑션등등) 추가 
+                        try {
+                            eval(e.data.JS);
+                        } catch (e) {
+                            console.error(e);
+    
+                        }
+    
+                        break;
+    
+    
+                    case "EXCUTE":
+                        //U4A -> electron JS 직접 수행 
+                        try {
+                            eval(e.data.JS);
+                        } catch (e) {
+                            console.error(e);
+    
+                        }
+    
+                        break;
+    
+    
+                    default:
+    
+                        //요청액션 동적 처리 펑션 호출 => u4a에서 요청하는 json object 정보는 반드시 (REQCD, IF_DATA) 존재해야함!!
+                        // REQCD: 처리액션코드및 JS 파일,펑션명으로 구성됨  IF_DATA: 요청 Data free style JSON 형태
+                        oAPP.onActionExcute(e.data.REQCD, e.data.IF_DATA);
+    
+                        break;
+                }              
 
             });
 
